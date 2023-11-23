@@ -1,7 +1,13 @@
-import 'package:chat_app/otp_verfication.dart';
+import 'package:chat_app/Homescreen.dart';
+import 'package:chat_app/models/phone_number.dart';
+import 'package:chat_app/models/phone_number_entity.dart';
+import 'package:chat_app/otp_verification.dart';
+import 'package:chat_app/service/fire_storage_service.dart';
+import 'package:chat_app/service/isar_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:chat_app/models/phone_number_entity.dart';
 
 
 class PhoneInput extends StatelessWidget {
@@ -13,21 +19,23 @@ class PhoneInput extends StatelessWidget {
       backgroundColor: Color.fromARGB(255, 18, 32, 47),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: MyHomePage(),
+          child: _PhoneInput(),
         ),
       ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class _PhoneInput extends StatefulWidget {
+  const _PhoneInput({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<_PhoneInput> createState() => _PhoneInputState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _PhoneInputState extends State<_PhoneInput> {
+  TextEditingController phoneNumberController = TextEditingController();
+  String? _verificationCode;
   String selectedCountryCode = '+84';
   String phoneNumber = '';
 
@@ -161,39 +169,77 @@ class _MyHomePageState extends State<MyHomePage> {
                 left: 40,
                 right: 40,
                 top: 650,
-                child: GestureDetector(
+                child: InkWell(
+                  onTap: _verifyPhone,
                   onTap: () async {
-                    await handlePhoneNumberVerification(context);
-                  },
+                  final isarService = IsarService();
+
+                  final newPhone = PhoneNumberEntity(
+                    phoneNumber: phoneNumberController.text,
+                  );
+
+                  final result = await isarService.createPhoneNumber(newPhone);
+
+                  if (result) {
+                    if (context.mounted) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                    }
+                  }
+
+                  try {
+                    final fireStorageService = FireStorageService();
+                    final newPhone = PhoneNumber(
+                      phone: phoneNumberController.text,
+                    );
+                    await fireStorageService.createPhoneNumber(newPhone);
+                    if (context.mounted) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                    }
+                  } catch (e) {
+                    print("404 not found");
+                  }
+                },
                   child: Container(
-                    width: 327,
-                    height: 55,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 48,
-                      vertical: 11,
+                    margin: const EdgeInsets.only(
+                      top: 18,
+                      bottom: 20,
+                      left: 24,
+                      right: 24,
                     ),
-                    clipBehavior: Clip.antiAlias,
-                    decoration: ShapeDecoration(
-                      color: const Color(0xFF002DE3),
-                      shape: RoundedRectangleBorder(
-                        side: const BorderSide(width: 1),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                    height: 52,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: const Color(0xFF002ED3),
                     ),
-                    child: const Align(
-                      alignment: Alignment.center,
+                    child: const Center(
                       child: Text(
-                        'Continue',
-                        textAlign: TextAlign.center,
+                        "Continue",
                         style: TextStyle(
-                          color: Color(0xFFF7F7FC),
-                          fontSize: 16,
-                          fontFamily: 'Mulish',
-                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                       ),
                     ),
                   ),
+                ),
+                child:  InkWell(
+                  onTap: loginWihOTP,
+                  child: Container(
+                    color: Colors.orange,
+                    height: 40,
+                    width: 100,
+                  ),
+                ),
                 ),
               ),
             ],
@@ -202,47 +248,63 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
     );
   }
-
-  Future<void> handlePhoneNumberVerification(BuildContext context) async {
-    final fullPhoneNumber = selectedCountryCode + phoneNumber;
-    print('Xác thực số điện thoại: $fullPhoneNumber');
-
+  _verifyPhone() async {
     try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: fullPhoneNumber,
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: '+84${phoneNumberController.text}',
         verificationCompleted: (PhoneAuthCredential credential) async {
-          await _auth.signInWithCredential(credential);
-          print('Xác minh tự động thành công');
+          await FirebaseAuth.instance
+              .signInWithCredential(credential)
+              .then((value) async {
+            if (value.user != null) {
+              loginWihOTP();
+            }
+          });
         },
         verificationFailed: (FirebaseAuthException e) {
-          print('Lỗi xác minh số điện thoại: ${e.message}');
-          // TODO: Xử lý lỗi xác minh số điện thoại
+          print(e.message);
         },
-        codeSent: (String verificationId, int? resendToken) {
-          navigateToOTPVerification(context, verificationId: verificationId, phoneNumber: fullPhoneNumber);
+        codeSent: (String? verficationID, int? resendToken) {
+          setState(() {
+            _verificationCode = verficationID;
+            print(" verficationID: $verficationID");
+          });
         },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          // TODO: Xử lý khi thời gian tự động lấy mã xác minh hết hạn
+        codeAutoRetrievalTimeout: (String verificationID) {
+          setState(() {
+            _verificationCode = verificationID;
+            print(" verficationID: $verificationID");
+          });
         },
-        timeout: const Duration(seconds: 60), // Thời gian chờ để xác minh
+        timeout: Duration(seconds: 120),
       );
     } catch (e) {
-      print('Lỗi gửi mã xác minh: $e');
-      // TODO: Xử lý lỗi gửi mã xác minh
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+        ),
+      );
     }
   }
-
-  void navigateToOTPVerification(BuildContext context,
-      {required String verificationId, required String phoneNumber}) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => OTPVerificationWidget(
-          verificationId: verificationId,
-          phoneNumber: phoneNumber,
-          inputPhoneNumber: phoneNumber, // Pass the input phone number to the OTP verification screen
+  void loginWihOTP() async {
+    try {
+      await FirebaseAuth.instance
+          .signInWithCredential(PhoneAuthProvider.credential(
+          verificationId: _verificationCode!, smsCode: '123456'))
+          .then((value) async {
+        if (value.user != null) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+                  (route) => false);
+        }
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
         ),
-      ),
-    );
+      );
+    }
   }
 }

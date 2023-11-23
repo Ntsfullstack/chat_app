@@ -29,7 +29,7 @@ class MyHomePage extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
                   width: double.infinity,
-                  height: 760,
+                  height: 759,
                   clipBehavior: Clip.antiAlias,
                   decoration: ShapeDecoration(
                     color: Colors.white,
@@ -48,7 +48,7 @@ class MyHomePage extends StatelessWidget {
                             // Điều hướng đến màn hình khác ở đây
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => PhoneInput()), // Thay YourNextScreen() bằng màn hình bạn muốn chuyển đến
+                              MaterialPageRoute(builder: (context) => const PhoneInput()), // Thay YourNextScreen() bằng màn hình bạn muốn chuyển đến
                             );
                           },
                           icon: const Icon(
