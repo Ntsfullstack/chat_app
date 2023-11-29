@@ -1,187 +1,255 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:flutter/cupertino.dart';
+import 'package:chat_app/home_page/chat_detail_screen.dart';
+import 'package:chat_app/bottom_bar_screen/bottom_bar_screen.dart';
+import 'package:flutter_svg/svg.dart';
 void main() {
-  runApp(MyApp());
+  runApp(
+    const MaterialApp(
+      home: Directionality(
+        textDirection: TextDirection.ltr,
+        child: HomePage(),
+      ),
+    ),
+  );
 }
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: PhoneInput(),
+      title: 'Your App Title',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      home: const HomePage(),
     );
   }
 }
 
-class PhoneInput extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<String> people = [
+    'nyc 1',
+    'nyc 2',
+    'nyc 3',
+    'nyc 4',
+    'nyc 5',
+    'nyc 6',
+  ];
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
-      ),
-      home: const Scaffold(
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: MyHomePage(),
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          bottomOpacity: 0,
+          title: const Padding(
+            padding: EdgeInsets.only(left: 10),
+            child: Text('Chats',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'Mulish'
+                )
+
+            ),
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 24),
+              child: SvgPicture.asset('assets/vectors/ic_new_message.svg'),
+            )
+          ],
         ),
-      ),
-    );
-  }
-}
+        bottomNavigationBar: BottomBarScreen(), // Gọi đến BottomBarScreen
+        body: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+          ),
+          child: ListView(
+            children: [
+              Column(
+                children: [
+                  Container(
+                      height: 58,
+                      padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      child: CupertinoTextField(
+                        placeholder: 'Search',
+                        prefix: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child: Icon(Icons.search,
+                              color: Color.fromARGB(66, 0, 0, 0)),
+                        ),
+                        placeholderStyle:
+                        const TextStyle(color: Color.fromARGB(66, 0, 0, 0)),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            style: BorderStyle.none,
+                          ),
+                          color: const Color.fromARGB(255, 235, 234, 234),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      )),
+                  Container(
+                    height: 100,
+                    child: ListView.builder(
+                      itemCount: people.length,
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (context, int i) {
+                        bool isOnline =
+                        true; // Replace with the actual online status of the user
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  String selectedCountryCode = '+1';
-  String phoneNumber = '';
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          height: 760,
-          // ... your existing UI code
-          child: Positioned(
-            left: 40,
-            right: 40,
-            top: 650,
-            child: GestureDetector(
-              onTap: () async {
-                if (phoneNumber.isNotEmpty) {
-                  await handlePhoneNumberVerification();
-                } else {
-                  print('Phone number is empty');
-                }
-              },
-              child: Container(
-                width: 327,
-                height: 55,
-                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 11),
-                clipBehavior: Clip.antiAlias,
-                decoration: ShapeDecoration(
-                  color: const Color(0xFF002DE3),
-                  shape: RoundedRectangleBorder(
-                    side: const BorderSide(width: 1),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: const Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Continue',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFFF7F7FC),
-                      fontSize: 16,
-                      fontFamily: 'Mulish',
-                      fontWeight: FontWeight.w600,
+                        return GestureDetector(
+                          onTap: () {
+                            // Navigate to chat detail screen when user is tapped
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                    ChatDetailsScreen(i + 1, people[i]),
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 5),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Stack(
+                                  children: [
+                                    Container(
+                                      height: 60,
+                                      width: 60,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade200,
+                                        image: DecorationImage(
+                                            image: AssetImage(
+                                                'assets/images/avatars/${i + 1}.png'),
+                                            scale: 10,
+                                            fit: BoxFit.contain),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      right: 0,
+                                      bottom: 0,
+                                      child: Container(
+                                        width: 16,
+                                        height: 16,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: isOnline
+                                              ? Colors.green
+                                              : Colors.grey,
+                                          border: Border.all(
+                                            color: Colors.white,
+                                            width: 2,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  people[i],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ),
-              ),
-            ),
+
+                  const Divider(),
+
+                  // list item chat
+                  ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: people.length,
+                      itemBuilder: (context, int index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(0.0),
+                          child: ListTile(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (BuildContext context) =>
+                                      ChatDetailsScreen(
+                                          index + 1, people[index]),
+                                ),
+                              );
+                            },
+                            leading: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey.shade200,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(6.0),
+                                child: Image.asset(
+                                  "assets/images/avatars/${index + 1}.png",
+                                ),
+                              ),
+                            ),
+                            title: Text(
+                              people[index],
+                              style:
+                              const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            subtitle: const Text(
+                              "Bạn có tin nhắn mới ",
+                            ),
+                            trailing: Column(
+                              children: [
+                                const Text(
+                                  '00.21',
+                                  style: TextStyle(
+                                      fontSize: 10, color: Colors.grey),
+                                ),
+                                const SizedBox(height: 5),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: 15,
+                                      height: 15,
+                                      decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.blue),
+                                      child: const Center(
+                                        child: Text(
+                                          '9+',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      })
+                ],
+              )
+            ],
           ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> handlePhoneNumberVerification() async {
-    codeSent(String verificationId, [int? forceResendingToken]) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => OTPVerificationWidget(
-            verificationId: verificationId,
-          ),
-        ),
-      );
-    }
-
-    if (phoneNumber.isNotEmpty) {
-      await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: selectedCountryCode + phoneNumber,
-        verificationCompleted: (PhoneAuthCredential phoneAuthCredential) {},
-        verificationFailed: (FirebaseAuthException authException) {
-          print(authException.message);
-        },
-        codeSent: codeSent,
-        codeAutoRetrievalTimeout: (String verificationId) {},
-      );
-    }
-  }
-}
-
-class OTPVerificationWidget extends StatefulWidget {
-  final String verificationId;
-  OTPVerificationWidget({required this.verificationId});
-
-  @override
-  _OTPVerificationWidgetState createState() => _OTPVerificationWidgetState();
-}
-
-class _OTPVerificationWidgetState extends State<OTPVerificationWidget> {
-  final TextEditingController otpController = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text(
-          'Enter OTP Code',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: TextFormField(
-            controller: otpController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              hintText: 'Enter OTP',
-            ),
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            final int smsCode = int.tryParse(otpController.text) ?? 0;
-            try {
-              await verifyOTP(widget.verificationId, smsCode);
-            } catch (e) {
-              print('Xác thực thất bại: $e');
-            }
-          },
-          child: const Text('Verify OTP'),
-        ),
-      ],
-    );
-  }
-
-  Future<void> verifyOTP(String verificationId, int smsCode) async {
-    try {
-      final AuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
-        verificationId: verificationId,
-        smsCode: smsCode.toString(),
-      );
-
-      final UserCredential authResult =
-      await FirebaseAuth.instance.signInWithCredential(phoneAuthCredential);
-      User? user = authResult.user;
-    } catch (e) {
-      print('Xác thực thất bại: $e');
-    }
+        ));
   }
 }
