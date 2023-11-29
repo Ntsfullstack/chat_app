@@ -1,253 +1,143 @@
-import 'package:chat_app/Homescreen.dart';
-import 'package:chat_app/models/phone_number.dart';
-import 'package:chat_app/models/phone_number_entity.dart';
+
 import 'package:chat_app/otp_verification.dart';
-import 'package:chat_app/service/fire_storage_service.dart';
-import 'package:chat_app/service/isar_service.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:chat_app/models/phone_number_entity.dart';
 
+import 'package:flutter_svg/flutter_svg.dart';
 
-class PhoneInput extends StatelessWidget {
-  const PhoneInput({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color.fromARGB(255, 18, 32, 47),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: _PhoneInput(),
-        ),
-      ),
-    );
-  }
-}
-
-class _PhoneInput extends StatefulWidget {
-  const _PhoneInput({Key? key}) : super(key: key);
+class InputPhoneNumber extends StatefulWidget {
+  const InputPhoneNumber({Key? key}) : super(key: key);
 
   @override
-  State<_PhoneInput> createState() => _PhoneInputState();
+  State<InputPhoneNumber> createState() => _InputPhoneNumberState();
 }
 
-class _PhoneInputState extends State<_PhoneInput> {
+class _InputPhoneNumberState extends State<InputPhoneNumber> {
   TextEditingController phoneNumberController = TextEditingController();
   String? _verificationCode;
-  String selectedCountryCode = '+84';
-  String phoneNumber = '';
-
-  get _auth => null;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
+    return Scaffold(
+      body: SafeArea(
+        child: SizedBox(
           width: double.infinity,
-          height: 760,
-          clipBehavior: Clip.antiAlias,
-          decoration: ShapeDecoration(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(0),
-            ),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                left: 1,
-                top: 11,
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 14,
+                    horizontal: 16,
+                  ),
+                  child: SvgPicture.asset(
+                    "assets/vectors/ic_arrow_left.svg",
                   ),
                 ),
               ),
-              const Positioned(
-                left: 55,
-                top: 210,
-                child: SizedBox(
-                  width: 280,
-                  child: Text(
-                    'Enter Your Phone Number',
-                    style: TextStyle(
-                      color: Color(0xFF0F1828),
-                      fontSize: 24,
-                      fontFamily: 'Mulish',
-                      fontWeight: FontWeight.w700,
-                      height: 1.0,
-                    ),
+              const SizedBox(height: 98),
+              const Center(
+                child: Text(
+                  "Enter Your Phone Number",
+                  style: TextStyle(
+                    color: Color(0xFF0F1828),
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-              const Positioned(
-                left: 25,
-                right: 25,
-                top: 240,
-                child: SizedBox(
+              const Center(
+                child: Padding(
+                  padding:  EdgeInsets.symmetric(horizontal: 40, vertical: 1),
                   child: Text(
-                    'Please confirm your country code and enter your phone number',
+                    "Please confirm your country code and enter your phone number",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Color(0xFF0F1828),
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.w400,
-                      height: 1.5,
+                      height: 2,
                     ),
                   ),
                 ),
               ),
-              Positioned(
-                top: 350,
-                left: 5,
-                right: 10,
+
+              const SizedBox(height: 48),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                ),
                 child: Row(
                   children: <Widget>[
-                    Container(
-                      width: 90,
-                      height: 50,
-                      child: DropdownButtonFormField<String>(
-                        items: ['+1', '+44', '+61', '+81', '+84']
-                            .map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedCountryCode = newValue!;
-                          });
-                        },
-                        value: selectedCountryCode,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: const Color(0xFFE7DFDF),
-                          contentPadding: const EdgeInsets.all(10),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
                     Expanded(
                       child: Container(
-                        height: 50,
-                        child: TextFormField(
-                          keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(
-                            hintText: 'Phone Number',
-                            fillColor: const Color(0xFFE5DBDB),
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            hintStyle: const TextStyle(
-                              height: 0.7,
-                            ),
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF7F7FC),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(
+                            color: Colors.grey.withOpacity(0.5),
                           ),
-                          onChanged: (value) {
-                            setState(() {
-                              phoneNumber = value;
-                            });
-                          },
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        child: TextFormField(
+                          controller: phoneNumberController,
+                          keyboardType: TextInputType.text,
+                          decoration: const InputDecoration(
+                            hintText: "Phone Number",
+                            hintStyle: TextStyle(
+                              color: Color(0xFFADB5BD),
+                              fontSize: 14,
+                            ),
+                            border: InputBorder.none,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              Positioned(
-                left: 40,
-                right: 40,
-                top: 650,
-                child: InkWell(
-                  onTap: _verifyPhone,
-                  onTap: () async {
-                  final isarService = IsarService();
-
-                  final newPhone = PhoneNumberEntity(
-                    phoneNumber: phoneNumberController.text,
-                  );
-
-                  final result = await isarService.createPhoneNumber(newPhone);
-
-                  if (result) {
-                    if (context.mounted) {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
-                        ),
-                        (Route<dynamic> route) => false,
-                      );
-                    }
-                  }
-
-                  try {
-                    final fireStorageService = FireStorageService();
-                    final newPhone = PhoneNumber(
-                      phone: phoneNumberController.text,
-                    );
-                    await fireStorageService.createPhoneNumber(newPhone);
-                    if (context.mounted) {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
-                        ),
-                        (Route<dynamic> route) => false,
-                      );
-                    }
-                  } catch (e) {
-                    print("404 not found");
-                  }
-                },
-                  child: Container(
-                    margin: const EdgeInsets.only(
-                      top: 18,
-                      bottom: 20,
-                      left: 24,
-                      right: 24,
-                    ),
-                    height: 52,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color: const Color(0xFF002ED3),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "Continue",
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
+              const SizedBox(height: 150),
+              InkWell(
+                onTap: _verifyPhone,
+                child: Container(
+                  margin: const EdgeInsets.only(
+                    left: 24,
+                    right: 24,
+                  ),
+                  height: 52,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: const Color(0xFF002ED3),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "Continue",
+                      style: TextStyle(
+                        color: Colors.white,
                       ),
                     ),
                   ),
-                ),
-                child:  InkWell(
-                  onTap: loginWihOTP,
-                  child: Container(
-                    color: Colors.orange,
-                    height: 40,
-                    width: 100,
-                  ),
-                ),
                 ),
               ),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
+
   _verifyPhone() async {
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(
@@ -257,26 +147,44 @@ class _PhoneInputState extends State<_PhoneInput> {
               .signInWithCredential(credential)
               .then((value) async {
             if (value.user != null) {
-              loginWihOTP();
+              print('Phone number verification successful');
+              // TODO: Navigate to the next screen or perform any necessary action
             }
           });
         },
         verificationFailed: (FirebaseAuthException e) {
           print(e.message);
         },
-        codeSent: (String? verficationID, int? resendToken) {
+        codeSent: (String? verificationID, int? resendToken) {
           setState(() {
-            _verificationCode = verficationID;
-            print(" verficationID: $verficationID");
+            _verificationCode = verificationID;
+            print("Verification ID: $verificationID");
           });
+
+          if (_verificationCode != null) {
+            // Pass the verification code and phone number to OTPVerificationWidget
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OTPVerificationWidget(
+                  verificationCode: _verificationCode!,
+                  phoneNumber: phoneNumberController.text, verificationId: _verificationCode!,
+
+                ),
+              ),
+            );
+          } else {
+            // Handle the case where verificationCode is null if needed
+            print("Verification code is null");
+          }
         },
         codeAutoRetrievalTimeout: (String verificationID) {
           setState(() {
             _verificationCode = verificationID;
-            print(" verficationID: $verificationID");
+            print("Verification ID: $verificationID");
           });
         },
-        timeout: Duration(seconds: 120),
+        timeout: const Duration(seconds: 120),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -286,25 +194,5 @@ class _PhoneInputState extends State<_PhoneInput> {
       );
     }
   }
-  void loginWihOTP() async {
-    try {
-      await FirebaseAuth.instance
-          .signInWithCredential(PhoneAuthProvider.credential(
-          verificationId: _verificationCode!, smsCode: '123456'))
-          .then((value) async {
-        if (value.user != null) {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-                  (route) => false);
-        }
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
-      );
-    }
-  }
+
 }

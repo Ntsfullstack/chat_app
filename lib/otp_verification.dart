@@ -1,167 +1,205 @@
-import 'package:flutter/cupertino.dart';
+import 'package:chat_app/login.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chat_app/phoneInput.dart';
 
-class OTPVerificationWidget extends StatelessWidget {
+class OTPScreen extends StatelessWidget {
+  final String verificationId;
+  final String phoneNumber;
+
+  const OTPScreen({
+    Key? key,
+    required this.verificationId,
+    required this.phoneNumber,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color.fromARGB(255, 18, 32, 47),
+    return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: VerificationLight(),
+          child: OTPVerificationWidget(
+            verificationId: verificationId,
+            phoneNumber: phoneNumber, verificationCode: '',
+          ),
         ),
       ),
     );
   }
 }
 
-class VerificationLight extends StatelessWidget {
-  const VerificationLight({Key? key}) : super(key: key);
+class OTPVerificationWidget extends StatefulWidget {
+  final String verificationId;
+  final String phoneNumber;
+
+  const OTPVerificationWidget({
+    Key? key,
+    required this.verificationId,
+    required this.phoneNumber, required String verificationCode,
+  }) : super(key: key);
+
+  @override
+  _OTPVerificationWidgetState createState() => _OTPVerificationWidgetState();
+}
+
+class _OTPVerificationWidgetState extends State<OTPVerificationWidget> {
+  late String enteredOTP;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: double.infinity,
-          height: 759,
-          clipBehavior: Clip.antiAlias,
-          decoration: ShapeDecoration(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(0),
-            ),
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        clipBehavior: Clip.antiAlias,
+        decoration: ShapeDecoration(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          child: Stack(
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Positioned(
-                left: 58,
-                top: 169,
-                child: Container(
-                  child: const Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Enter Code',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xFF0F1828),
-                          fontSize: 24,
-                          fontFamily: 'Mulish',
-                          fontWeight: FontWeight.w700,
-                          height: 0,
-                        ),
-                      ),
-                      SizedBox(height: 18),
-                      SizedBox(
-                        width: 261,
-                        child: Text(
-                          'We have sent you an SMS with the code ',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Color(0xFF0F1828),
-                            fontSize: 14,
-                            fontFamily: 'Mulish',
-                            fontWeight: FontWeight.w400,
-                            height: 0.2,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+              const Text(
+                'Enter Code',
+                style: TextStyle(
+                  color: Color(0xFF0F1828),
+                  fontSize: 24,
+                  fontFamily: 'Mulish',
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              Positioned(
-                left: 20,
-                top: 303,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 40,
-                      height: 60,
-                      child: OTPInputField(),
-                    ),
-                    const SizedBox(width: 20),
-                    SizedBox(
-                      width: 40,
-                      height: 60,
-                      child: OTPInputField(),
-                    ),
-                    const SizedBox(width: 20),
-                    SizedBox(
-                      width: 40,
-                      height: 60,
-                      child: OTPInputField(),
-                    ),
-                    const SizedBox(width: 20),
-                    SizedBox(
-                      width: 40,
-                      height: 60,
-                      child: OTPInputField(),
-                    ),
-                    const SizedBox(width: 20),
-                    SizedBox(
-                      width: 40,
-                      height: 60,
-                      child: OTPInputField(),
-                    ),
-                    const SizedBox(width: 20),
-                    SizedBox(
-                      width: 40,
-                      height: 60,
-                      child: OTPInputField(),
-                    ),
-                    const SizedBox(width: 20),
-                  ],
+              const SizedBox(height: 18),
+              const Text(
+                'We have sent you an SMS with the code',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFF0F1828),
+                  fontSize: 14,
+                  fontFamily: 'Mulish',
+                  fontWeight: FontWeight.w400,
                 ),
               ),
-              // Add the confirmation button
-              Positioned(
-                right: MediaQuery.of(context).size.width * 0.4,
-                top: MediaQuery.of(context).size.height * 0.5,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Call the function to handle OTP confirmation
-                  },
-                  child: Text('Confirm'),
-                ),
+              const SizedBox(height: 20),
+              OTPInputFields(
+                onSubmitted: (otp) {
+                  setState(() {
+                    enteredOTP = otp;
+                  });
+                },
               ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => loginWithOTP(context),
+                child: const Text('Confirm'),
+              ),
+              SizedBox(height: 20,),
+            const Text(
+              'Dont have a code ?'' Resend Code',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFF0F1828),
+                fontSize: 15,
+                fontFamily: 'Mulish',
 
 
+              ),
+            )
             ],
           ),
         ),
-      ],
+      ),
     );
+  }
+
+  void loginWithOTP(BuildContext context) async {
+    print("Verification ID: ${widget.verificationId}");
+    print("Entered OTP: $enteredOTP");
+
+    try {
+      if (widget.verificationId != null && enteredOTP != null && enteredOTP.isNotEmpty) {
+        final authCredential = PhoneAuthProvider.credential(
+          verificationId: widget.verificationId,
+          smsCode: enteredOTP,
+        );
+
+        await FirebaseAuth.instance.signInWithCredential(authCredential).then((value) async {
+          if (value.user != null) {
+            // Navigate to the desired screen after successful login
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MyProfileScreen()),
+            );
+          }
+        });
+      } else {
+        print("Error: verificationId or enteredOTP is null or empty");
+        // Handle the case where either verificationId or enteredOTP is null or empty
+      }
+    } catch (e) {
+      print("Error during OTP verification: $e");
+      // Handle the specific error here, you can print it or show a specific message to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to authenticate. Please try again."),
+        ),
+      );
+    }
+  }
+}
+
+class OTPInputFields extends StatelessWidget {
+  final Function(String) onSubmitted;
+
+  const OTPInputFields({Key? key, required this.onSubmitted}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(
+        6,
+            (index) => Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ClipOval(
+            child: SizedBox(
+              width: 43,
+              height: 43,
+              child: OTPInputField(onSubmitted: onSubmitted),
+            ),
+          ),
+        ),
+      ),
+    );
+
   }
 }
 
 class OTPInputField extends StatelessWidget {
+  final Function(String) onSubmitted;
+
+  const OTPInputField({Key? key, required this.onSubmitted}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 32,
-      height: 40,
-      child: TextField(
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: const Color(0xFFABA1A1),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-          ),
+    return TextField(
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: const Color(0xFFDCD4D4),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6),
         ),
-        textAlign: TextAlign.center,
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        onChanged: (value) {
-          if (value.isNotEmpty) {
-            FocusScope.of(context).nextFocus();
-          }
-        },
       ),
+      textAlign: TextAlign.center,
+      keyboardType: TextInputType.number,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          onSubmitted(value);
+          FocusScope.of(context).nextFocus();
+        }
+      },
     );
   }
 }

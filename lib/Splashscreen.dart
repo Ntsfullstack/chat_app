@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (context != null && context!.mounted) {
         Navigator.of(context!).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
+            builder: (context) => const HomePage(),
           ),
         );
       }
@@ -37,7 +37,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (context != null && context!.mounted) {
         Navigator.of(context!).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => const PhoneInput(),
+            builder: (context) => const InputPhoneNumber(),
           ),
         );
       }
@@ -115,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen> {
             onTap: () async {
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                      builder: (context)=> PhoneInput(),
+                      builder: (context)=> const InputPhoneNumber(),
                   )
               );
             },

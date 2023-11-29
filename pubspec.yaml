@@ -51,6 +51,14 @@ dependencies:
   firebase_messaging: ^14.7.5
   json_annotation: ^4.8.1
   permission_handler: ^11.0.1
+  js: ^0.6.7
+  fluttertoast: ^8.2.4
+  firebase_storage: ^11.5.2
+  image_picker: ^1.0.4
+  cached_network_image: ^3.3.0
+  emoji_picker_flutter: ^1.6.3
+  image_gallery_saver: ^2.0.3
+  gallery_saver: ^2.3.2
 
 dev_dependencies:
   flutter_test:
@@ -70,12 +78,9 @@ dev_dependencies:
 flutter:
    uses-material-design: true
    assets:
-     - assets/images/img_background.png
-     - assets/vectors/ic_arrow_left.svg
-     - assets/vectors/ic_chat.svg
-     - assets/vectors/ic_contact.svg
-     - assets/vectors/ic_more.svg
-
+     - assets/images/
+     - assets/vectors/
+     - assets/images/avatars/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

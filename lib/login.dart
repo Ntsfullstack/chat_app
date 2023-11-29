@@ -1,236 +1,199 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:chat_app/login.dart';
-import 'phoneInput.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+class MyProfileScreen extends StatefulWidget {
+  const MyProfileScreen({Key? key}) : super(key: key);
 
+  @override
+  _MyProfileScreenState createState() => _MyProfileScreenState();
+}
 
-class MyProfileScreen extends StatelessWidget {
+class _MyProfileScreenState extends State<MyProfileScreen> {
+  String? _selectedImagePath;
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+        ),
+        title: const Text(
+          'Your Profile',
+          style: TextStyle(
+            color: Color(0xFF0F1828),
+            fontSize: 20,
+            fontFamily: 'Mulish',
+            fontWeight: FontWeight.w700,
+            height: 1.0,
+          ),
+        ),
+      ),
+      body: Center(
         child: SingleChildScrollView(
-          child: MyHomePage(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => _selectAvatar(context),
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: const Color(0xFFD3D3EA),
+                    child: _selectedImagePath != null
+                        ? ClipOval(
+                      child: Image.file(
+                        File(_selectedImagePath!),
+                        fit: BoxFit.cover,
+                        width: 96,
+                        height: 96,
+                      ),
+                    )
+                        : const Icon(
+                      Icons.person,
+                      size: 48,
+                      color: Color(0xAFA7A7FF),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFF7F7FC),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  child: TextFormField(
+                    controller: _firstNameController,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'First Name (Required)',
+                      hintStyle: TextStyle(
+                        color: Color(0xFFADB5BD),
+                        fontSize: 14,
+                        fontFamily: 'Mulish',
+                      ),
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontFamily: 'Mulish',
+                      fontWeight: FontWeight.w600,
+                      height: 0.7,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  decoration: ShapeDecoration(
+                    color: const Color(0xFFC6C6E3),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  child: TextFormField(
+                    controller: _lastNameController,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Last Name (Required)',
+                      hintStyle: TextStyle(
+                        color: Color(0xFFFFFFFF),
+                        fontSize: 14,
+                        fontFamily: 'Mulish',
+                        fontWeight: FontWeight.w600,
+                        height: 0.7,
+                      ),
+                    ),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontFamily: 'Mulish',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                GestureDetector(
+                  onTap: () {
+                    _saveUserInfo(_firstNameController.text, _lastNameController.text, _selectedImagePath ?? '');
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    width: 327,
+                    height: 55,
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 11),
+                    clipBehavior: Clip.antiAlias,
+                    decoration: ShapeDecoration(
+                      color: const Color(0xFF002DE3),
+                      shape: RoundedRectangleBorder(
+                        side: const BorderSide(width: 1),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Save',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFFF7F7FC),
+                          fontSize: 16,
+                          fontFamily: 'Mulish',
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
-}
 
-class MyHomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Column(
-          children: [
-            Container(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  width: double.infinity,
-                  height: 759,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: ShapeDecoration(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(0),
-                    ),
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 1,
-                        top: 11,
-                        child: IconButton(
-                          onPressed: () {
-                            // Xử lý khi nút back được nhấn
-                            // Điều hướng đến màn hình khác ở đây
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const PhoneInput()), // Thay YourNextScreen() bằng màn hình bạn muốn chuyển đến
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                      const Positioned(
-                        left: 50,
-                        top: 25,
-                        child: SizedBox(
-                          width: 280,
-                          child: Text(
-                            'Your Profile',
-                            style: TextStyle(
-                              color: Color(0xFF0F1828),
-                              fontSize: 20,
-                              fontFamily: 'Mulish',
-                              fontWeight: FontWeight.w700,
-                              height: 1.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 150,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Container(
-                            width: 100,
-                            height: 100,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFFF7F7FC),
-                            ),
-                            child: const Center(
-                              child: Icon(
-                                Icons.person,
-                                size: 48,
-                                color: Color(0xAFA7A7FF),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 220,
-                        right: 147,
-                        child: Container(
-                          width: 32,
-                          height: 32,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black,
-                          ),
-                          child: const Center(
-                            child: Icon(
-                              Icons.add,
-                              size: 24,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 270,
-                        left: 20,
-                        right: 20,
-                        child: Container(
-                          width: 237,
-                          height: 36,
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                          decoration: ShapeDecoration(
-                            color: const Color(0xFFF7F7FC),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                          child: TextFormField( // Sử dụng TextFormField thay vì Text
-                            decoration: const InputDecoration(
-                              border: InputBorder.none, // Ẩn viền của TextFormField
-                              hintText: 'First Name (Required)',
-                              hintStyle: TextStyle(
-                                color: Color(0xFFADB5BD),
-                                fontSize: 14,
-                                fontFamily: 'Mulish',
-                              ),
-                            ),
-                            style: const TextStyle( // Kiểu chữ cho nội dung nhập
-                              color: Colors.black, // Màu chữ
-                              fontSize: 14,
-                              fontFamily: 'Mulish',
-                              fontWeight: FontWeight.w600,
-                              height: 0.7
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 320,
-                        left: 20,
-                        right: 20,
-                        child: Container(
-                          width: 237,
-                          height: 36,
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                          decoration: ShapeDecoration(
-                            color: const Color(0xFFF7F7FC),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                          child: TextFormField( // Sử dụng TextFormField thay vì Text
-                            decoration: const InputDecoration(
-                              border: InputBorder.none, // Ẩn viền của TextFormField
-                              hintText: 'Last Name (Required)',
-                              hintStyle: TextStyle(
-                                color: Color(0xFFADB5BD),
-                                fontSize: 14,
-                                fontFamily: 'Mulish',
-                                fontWeight: FontWeight.w600,
-                                height: 0.7,
-                              ),
-                            ),
-                            style: const TextStyle( // Kiểu chữ cho nội dung nhập
-                              color: Colors.black, // Màu chữ
-                              fontSize: 14,
-                              fontFamily: 'Mulish',
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left:40,
-                        right: 40,
-                        top: 670,
-                        child: GestureDetector(
-                          onTap: () {
-                            // Xử lý khi nút "Save" được nhấn
-                            // Thêm mã lệnh của bạn để lưu thông tin và thực hiện hành động cần thiết
-                            // Sau đó, có thể sử dụng Navigator để chuyển đổi màn hình
-                          },
-                          child: Container(
-                            width: 327,
-                            height: 55,
-                            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 11),
-                            clipBehavior: Clip.antiAlias,
-                            decoration: ShapeDecoration(
-                              color: const Color(0xFF002DE3),
-                              shape: RoundedRectangleBorder(
-                                side: const BorderSide(width: 1),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            child: const Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Save',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Color(0xFFF7F7FC),
-                                  fontSize: 16,
-                                  fontFamily: 'Mulish',
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
+  Future<void> _selectAvatar(BuildContext context) async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _selectedImagePath = image.path;
+      });
+      print('Selected Image Path: ${image.path}');
+    } else {
+      // Handle case when no image is selected
+    }
+  }
+
+  Future<void> _saveUserInfo(String firstName, String lastName, String imagePath) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').add({
+        'firstName': firstName,
+        'lastName': lastName,
+        'avatarUrl': imagePath,
+      });
+      print('User information saved to Firestore.');
+    } catch (e) {
+      print('Error saving user information: $e');
+    }
   }
 }
-
