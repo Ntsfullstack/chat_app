@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:chat_app/loginWithGoogle.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -37,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (context != null && context!.mounted) {
         Navigator.of(context!).pushReplacement(
           MaterialPageRoute(
-            builder: (context) => const InputPhoneNumber(),
+            builder: (context) =>  InputPhoneNumber(),
           ),
         );
       }
@@ -115,7 +116,7 @@ class _SplashScreenState extends State<SplashScreen> {
             onTap: () async {
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                      builder: (context)=> const InputPhoneNumber(),
+                      builder: (context)=>  LoginScreen(),
                   )
               );
             },

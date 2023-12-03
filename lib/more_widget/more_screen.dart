@@ -1,846 +1,238 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_app/APIs/apis.dart';
+import 'package:chat_app/Homescreen.dart';
+import 'package:chat_app/Splashscreen.dart';
+import 'package:chat_app/models/chat_user.dart';
+import 'package:chat_app/more_widget/profile_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
-
-class more_screen extends StatelessWidget {
-  const more_screen({super.key});
-
+class MoreLight extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
-      ),
-      home: Scaffold(
-        body: ListView(children: [
-          MoreLight(),
-        ]),
-      ),
-    );
-  }
+  _MoreLightState createState() => _MoreLightState();
 }
 
-class MoreLight extends StatelessWidget {
+class _MoreLightState extends State<MoreLight> {
+  List<ChatUser> list = [];
+  User? _user;
+
   @override
-  Widget build(BuildContext context) {
-    return Column(
+  void initState() {
+    super.initState();
+    _getUserInfo();
+  }
+
+  Future<void> _getUserInfo() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+
+    if (user != null) {
+      await user.reload();
+      user = auth.currentUser;
+
+      setState(() {
+        _user = user;
+      });
+    }
+  }
+
+  Future<void> _signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+
+      // Clear user information from local cache
+      setState(() {
+        _user = null;
+      });
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => SplashScreen()),
+            (Route<dynamic> route) => false,
+      );
+    } catch (e) {
+      print("Error signing out: $e");
+    }
+  }
+
+  Widget buildSettingRow(String title, IconData icon) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          width: 375,
-          height: 812,
-          clipBehavior: Clip.antiAlias,
-          decoration: ShapeDecoration(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
-            ),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                left: 0,
-                top: 90,
-                child: Container(
-                  height: 498,
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        clipBehavior: Clip.antiAlias,
-                        decoration: const BoxDecoration(color: Colors.white),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    width: 49.10,
-                                    height: 50,
-                                    padding: const EdgeInsets.only(
-                                      top: 13,
-                                      left: 13,
-                                      right: 12.10,
-                                      bottom: 13,
-                                    ),
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: ShapeDecoration(
-                                      color: const Color(0xFFECECEC),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(50),
-                                      ),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 24,
-                                          height: 24,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: const BoxDecoration(),
-                                          child: const Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Container(
-                                    child: const Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          width: 126.68,
-                                          child: Text(
-                                            'Almayra Zamzamy',
-                                            style: TextStyle(
-                                              color: Color(0xFF0F1828),
-                                              fontSize: 14,
-                                              fontFamily: 'Mulish',
-                                              fontWeight: FontWeight.w600,
-                                              height: 0.12,
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(height: 2),
-                                        SizedBox(
-                                          width: 134,
-                                          child: Text(
-                                            '+62 1309 - 1710 - 1920',
-                                            style: TextStyle(
-                                              color: Color(0xFFADB5BD),
-                                              fontSize: 12,
-                                              fontFamily: 'Mulish',
-                                              fontWeight: FontWeight.w400,
-                                              height: 0.14,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 64),
-                            Container(
-                              width: 24,
-                              height: 24,
-                              clipBehavior: Clip.antiAlias,
-                              decoration: const BoxDecoration(),
-                              child: const Stack(children: [
-
-                                  ]),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: double.infinity,
-                        height: 104,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        clipBehavior: Clip.antiAlias,
-                        decoration: const BoxDecoration(color: Colors.white),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 24,
-                                          height: 24,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: const BoxDecoration(),
-                                          child: const Stack(children: [
-
-                                              ]),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        const Text(
-                                          'Account',
-                                          style: TextStyle(
-                                            color: Color(0xFF0F1828),
-                                            fontSize: 14,
-                                            fontFamily: 'Mulish',
-                                            fontWeight: FontWeight.w600,
-                                            height: 0.12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 187),
-                                  Container(
-                                    width: 24,
-                                    height: 24,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: const BoxDecoration(),
-                                    child: const Stack(children: [
-
-                                        ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 24,
-                                          height: 24,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: const BoxDecoration(),
-                                          child: const Stack(children: [
-
-                                              ]),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        const Text(
-                                          'Chats',
-                                          style: TextStyle(
-                                            color: Color(0xFF0F1828),
-                                            fontSize: 14,
-                                            fontFamily: 'Mulish',
-                                            fontWeight: FontWeight.w600,
-                                            height: 0.12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 187),
-                                  Container(
-                                    width: 24,
-                                    height: 24,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: const BoxDecoration(),
-                                    child: const Stack(children: [
-
-                                        ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: double.infinity,
-                        height: 304,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        clipBehavior: Clip.antiAlias,
-                        decoration: const BoxDecoration(color: Colors.white),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 24,
-                                          height: 24,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: const BoxDecoration(),
-                                          child: const Stack(children: [
-
-                                              ]),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        const Text(
-                                          'Appereance',
-                                          style: TextStyle(
-                                            color: Color(0xFF0F1828),
-                                            fontSize: 14,
-                                            fontFamily: 'Mulish',
-                                            fontWeight: FontWeight.w600,
-                                            height: 0.12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 187),
-                                  Container(
-                                    width: 24,
-                                    height: 24,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: const BoxDecoration(),
-                                    child: const Stack(children: [
-
-                                        ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 24,
-                                          height: 24,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: const BoxDecoration(),
-                                          child: const Stack(children: [
-
-                                              ]),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        const Text(
-                                          'Notification',
-                                          style: TextStyle(
-                                            color: Color(0xFF0F1828),
-                                            fontSize: 14,
-                                            fontFamily: 'Mulish',
-                                            fontWeight: FontWeight.w600,
-                                            height: 0.12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 187),
-                                  Container(
-                                    width: 24,
-                                    height: 24,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: const BoxDecoration(),
-                                    child: const Stack(children: [
-
-                                        ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 24,
-                                          height: 24,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: const BoxDecoration(),
-                                          child: const Stack(children: [
-
-                                              ]),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        const Text(
-                                          'Privacy',
-                                          style: TextStyle(
-                                            color: Color(0xFF0F1828),
-                                            fontSize: 14,
-                                            fontFamily: 'Mulish',
-                                            fontWeight: FontWeight.w600,
-                                            height: 0.12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 187),
-                                  Container(
-                                    width: 24,
-                                    height: 24,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: const BoxDecoration(),
-                                    child: const Stack(children: [
-
-                                        ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 24,
-                                          height: 24,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: const BoxDecoration(),
-                                          child: const Stack(children: [
-
-                                              ]),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        const Text(
-                                          'Data Usage',
-                                          style: TextStyle(
-                                            color: Color(0xFF0F1828),
-                                            fontSize: 14,
-                                            fontFamily: 'Mulish',
-                                            fontWeight: FontWeight.w600,
-                                            height: 0.12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 187),
-                                  Container(
-                                    width: 24,
-                                    height: 24,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: const BoxDecoration(),
-                                    child: const Stack(children: [
-
-                                        ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 24,
-                                          height: 24,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: const BoxDecoration(),
-                                          child: const Stack(children: [
-
-                                              ]),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        const Text(
-                                          'Help',
-                                          style: TextStyle(
-                                            color: Color(0xFF0F1828),
-                                            fontSize: 14,
-                                            fontFamily: 'Mulish',
-                                            fontWeight: FontWeight.w600,
-                                            height: 0.12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 187),
-                                  Container(
-                                    width: 24,
-                                    height: 24,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: const BoxDecoration(),
-                                    child: const Stack(children: [
-
-                                        ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          width: 24,
-                                          height: 24,
-                                          clipBehavior: Clip.antiAlias,
-                                          decoration: const BoxDecoration(),
-                                          child: const Stack(children: [
-
-                                              ]),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        const Text(
-                                          'Invite Your Friends',
-                                          style: TextStyle(
-                                            color: Color(0xFF0F1828),
-                                            fontSize: 14,
-                                            fontFamily: 'Mulish',
-                                            fontWeight: FontWeight.w600,
-                                            height: 0.12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 187),
-                                  Container(
-                                    width: 24,
-                                    height: 24,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: const BoxDecoration(),
-                                    child: const Stack(children: [
-
-                                        ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 0,
-                top: 0,
-                child: Container(
-                  width: 375,
-                  height: 90,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 13),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: const BoxDecoration(color: Colors.white),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.only(left: 6, right: 21),
-                              clipBehavior: Clip.antiAlias,
-                              decoration: const BoxDecoration(),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '9:41',
-                                    style: TextStyle(
-                                      color: Color(0xFF0F1828),
-                                      fontSize: 15,
-                                      fontFamily: 'Segoe UI',
-                                      fontWeight: FontWeight.w600,
-                                      height: 0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 260),
-                            Container(
-                              width: 67,
-                              height: 11.50,
-                              clipBehavior: Clip.antiAlias,
-                              decoration: const BoxDecoration(),
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                    left: 0,
-                                    top: -0.02,
-                                    child: Container(
-                                      width: 67,
-                                      height: 11.54,
-                                      child: Stack(
-                                        children: [
-                                          Positioned(
-                                            left: 42.48,
-                                            top: 0,
-                                            child: Container(
-                                              width: 24.52,
-                                              height: 11.54,
-                                              child: const Stack(children: [
-
-                                                  ]),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: double.infinity,
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: SizedBox(
-                                child: Text(
-                                  'More',
-                                  style: TextStyle(
-                                    color: Color(0xFF0F1828),
-                                    fontSize: 18,
-                                    fontFamily: 'Mulish',
-                                    fontWeight: FontWeight.w600,
-                                    height: 0.09,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 0,
-                top: 729,
-                child: Container(
-                  width: 375,
-                  height: 83,
-                  padding: const EdgeInsets.only(top: 12),
-                  clipBehavior: Clip.antiAlias,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x0A000000),
-                        blurRadius: 24,
-                        offset: Offset(0, -1),
-                        spreadRadius: 0,
-                      )
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 343,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 58,
-                              height: 44,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 32,
-                                    height: 32,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: const BoxDecoration(),
-                                    child: const Stack(children: [
-
-                                        ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 1),
-                            Container(
-                              width: 58,
-                              height: 44,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 32,
-                                    height: 32,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: const BoxDecoration(),
-                                    child: const Stack(children: [
-
-                                        ]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 1),
-                            Container(
-                              width: 58,
-                              height: 44,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Text(
-                                    'More',
-                                    style: TextStyle(
-                                      color: Color(0xFF0F1828),
-                                      fontSize: 14,
-                                      fontFamily: 'Lato',
-                                      fontWeight: FontWeight.w600,
-                                      height: 0.12,
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 4,
-                                    height: 4,
-                                    decoration: const ShapeDecoration(
-                                      color: Color(0xFF0F1828),
-                                      shape: OvalBorder(),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 375,
-                        height: 22.46,
-                        padding: const EdgeInsets.symmetric(horizontal: 122),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Opacity(
-                              opacity: 0.90,
-                              child: Container(
-                                width: 131,
-                                height: 5,
-                                decoration: ShapeDecoration(
-                                  color: const Color(0xFF0F1828),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(100),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+        Text(
+          title,
+          style: const TextStyle(
+            color: Color(0xFF0F1828),
+            fontSize: 14,
+            fontFamily: 'Mulish',
+            fontWeight: FontWeight.w600,
+            height: 0.12,
           ),
         ),
+        const Icon(
+          Icons.arrow_forward_ios,
+          color: Color(0xFF277AC7),
+          size: 16,
+        ),
       ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Top section with user details
+            GestureDetector(
+              onTap: () {
+                Navigator.push(context,
+                MaterialPageRoute(builder: (_) => ProfileScreen(user: APIs.me))
+                );
+                // Handle user details tap
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                color: Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // User details
+                    Row(
+                      children: [
+                        Container(
+                          width: 60,
+                          height: 60,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xFFECECEC),
+                          ),
+                          child: Center(
+                            child: _user != null
+                                ? CachedNetworkImage(
+                              width: 60,
+                              height: 60,
+                              imageUrl: _user!.photoURL ?? '',
+                              imageBuilder: (context, imageProvider) =>
+                                  CircleAvatar(
+                                    backgroundImage: imageProvider,
+                                  ),
+                              placeholder: (context, url) =>
+                              const CircleAvatar(
+                                child: Icon(CupertinoIcons.person),
+                              ),
+                              errorWidget: (context, url, error) =>
+                              const CircleAvatar(
+                                child: Icon(CupertinoIcons.person),
+                              ),
+                            )
+                                : const CircleAvatar(
+                              child: Icon(CupertinoIcons.person),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _user?.displayName ?? 'User name',
+                              style: const TextStyle(
+                                color: Color(0xFF0F1828),
+                                fontSize: 14,
+                                fontFamily: 'Mulish',
+                                fontWeight: FontWeight.w600,
+                                height: 2,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _user?.email ?? '+62 1309 - 1710 - 1920',
+                              style: const TextStyle(
+                                color: Color(0xFFADB5BD),
+                                fontSize: 12,
+                                fontFamily: 'Mulish',
+                                fontWeight: FontWeight.w400,
+                                height: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    // Logout button
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+            // Middle section with various settings
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    buildSettingRow('Account', Icons.account_circle),
+                    const SizedBox(height: 30),
+                    buildSettingRow('Chats', Icons.chat),
+                    const SizedBox(height: 30),
+                    buildSettingRow('Appearance', Icons.color_lens),
+                    const SizedBox(height: 30),
+                    buildSettingRow('Notification', Icons.notifications),
+                    const SizedBox(height: 30),
+                    buildSettingRow('Privacy', Icons.privacy_tip),
+                    const SizedBox(height: 30),
+                    buildSettingRow('Data Usage', Icons.data_usage),
+                    const SizedBox(height: 30),
+                    buildSettingRow('Help', Icons.help),
+                    const SizedBox(height: 30),
+                    buildSettingRow('Invite Your Friends', Icons.person_add),
+                  ],
+                ),
+              ),
+            ),
+            // Bottom section with progress indicator
+          ],
+        ),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: FloatingActionButton.extended(
+          backgroundColor: Colors.redAccent,
+          onPressed: () async {
+            // Show progress dialog
+
+            // Update active status
+
+
+            // Sign out from app
+            await APIs.auth.signOut().then((value) async {
+              // Sign out from Google
+              await GoogleSignIn().signOut().then((value) {
+                // Hide progress dialog
+                Navigator.pop(context);
+
+                // Move to home screen
+                Navigator.pop(context);
+
+                // Replace home screen with login screen
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SplashScreen()),
+                );
+              });
+            });
+          },
+          icon: const Icon(Icons.logout),
+          label: const Text('Logout'),
+        ),
+      ),
     );
   }
 }
