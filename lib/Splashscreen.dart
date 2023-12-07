@@ -27,7 +27,8 @@ class _SplashScreenState extends State<SplashScreen> {
     final isarService = IsarService();
     final phones = await isarService.getAllPhoneNumbers();
     if (phones.isNotEmpty) {
-      if (context != null && context!.mounted) {
+      if (context!.mounted) {
+        // ignore: use_build_context_synchronously
         Navigator.of(context!).pushReplacement(
           MaterialPageRoute(
             builder: (context) => const HomePage(),
@@ -35,10 +36,11 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       }
     } else {
-      if (context != null && context!.mounted) {
+      if (context!.mounted) {
+        // ignore: use_build_context_synchronously
         Navigator.of(context!).pushReplacement(
           MaterialPageRoute(
-            builder: (context) =>  InputPhoneNumber(),
+            builder: (context) =>  const InputPhoneNumber(),
           ),
         );
       }
@@ -116,7 +118,7 @@ class _SplashScreenState extends State<SplashScreen> {
             onTap: () async {
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                      builder: (context)=>  LoginScreen(),
+                      builder: (context)=>  const InputPhoneNumber(),
                   )
               );
             },
@@ -130,13 +132,15 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 52,
               width: double.infinity,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(25),
                 color: const Color(0xFF002ED3),
               ),
               child: const Center(
                 child: Text(
                   "Start Messaging",
                   style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Mulish',
                     color: Colors.white,
                   ),
                 ),

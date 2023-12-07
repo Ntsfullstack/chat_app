@@ -35,6 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
          print('\nUser: ${user.user}'),
          print('\nUserAddtionalInfo: ${user.additionalUserInfo}'),
          if((await APIs.userExists()) ) {
+         // ignore: use_build_context_synchronously
          Navigator.pushReplacement(
              context, MaterialPageRoute(builder: (_) => const HomePage()))
        } else {

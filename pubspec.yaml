@@ -60,6 +60,7 @@ dependencies:
   image_gallery_saver: ^2.0.3
   gallery_saver: ^2.3.2
   google_sign_in: ^5.4.4
+  font_awesome_flutter: ^10.6.0
 
 dev_dependencies:
   flutter_test:
@@ -81,7 +82,7 @@ flutter:
    assets:
      - assets/images/
      - assets/vectors/
-     - assets/images/avatars/
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

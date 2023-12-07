@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
 
+import 'package:chat_app/APIs/apis.dart';
+import 'package:chat_app/Homescreen.dart';
 import 'package:chat_app/otp_verification.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class InputPhoneNumber extends StatefulWidget {
   const InputPhoneNumber({Key? key}) : super(key: key);
@@ -17,6 +22,7 @@ class InputPhoneNumber extends StatefulWidget {
 class _InputPhoneNumberState extends State<InputPhoneNumber> {
   TextEditingController phoneNumberController = TextEditingController();
   String? _verificationCode;
+  bool _isAnimate = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +60,7 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
               ),
               const Center(
                 child: Padding(
-                  padding:  EdgeInsets.symmetric(horizontal: 40, vertical: 1),
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 1),
                   child: Text(
                     "Please confirm your country code and enter your phone number",
                     textAlign: TextAlign.center,
@@ -67,9 +73,7 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 48),
-
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
@@ -107,7 +111,7 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
                   ],
                 ),
               ),
-              const SizedBox(height: 150),
+              const SizedBox(height: 48),
               InkWell(
                 onTap: _verifyPhone,
                 child: Container(
@@ -131,6 +135,39 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
                   ),
                 ),
               ),
+              const SizedBox(height: 50), // Added spacing between buttons
+              InkWell(
+                onTap: () {
+                  _handleGoogleBtnClick();
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(left: 50, right: 50),
+                  height: 52,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: const Color(0xFFD30000),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Thêm icon của Google ở đây (ví dụ sử dụng FontAwesomeIcons)
+                      Icon(
+                        FontAwesomeIcons.google,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 10), // Khoảng cách giữa icon và văn bản
+                      Text(
+                        "Continue with Google",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              ),
             ],
           ),
         ),
@@ -138,7 +175,54 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
     );
   }
 
-  _verifyPhone() async {
+  void initState() {
+    super.initState();
+
+    // for auto-triggering animation
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() => _isAnimate = true);
+    });
+  }
+
+  void _handleGoogleBtnClick() {
+    _signInWithGoogle().then((user) async {
+      print('\nUser: ${user.user}');
+      print('\nUserAdditionalInfo: ${user.additionalUserInfo}');
+      if (await APIs.userExists()) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomePage()),
+        );
+      } else {
+        await APIs.createUser().then((value) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const HomePage()),
+          );
+        });
+      }
+    });
+  }
+
+  Future<UserCredential> _signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+    await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  void _verifyPhone() async {
     try {
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: '+84${phoneNumberController.text}',
@@ -168,8 +252,8 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
               MaterialPageRoute(
                 builder: (context) => OTPVerificationWidget(
                   verificationCode: _verificationCode!,
-                  phoneNumber: phoneNumberController.text, verificationId: _verificationCode!,
-
+                  phoneNumber: phoneNumberController.text,
+                  verificationId: _verificationCode!,
                 ),
               ),
             );
@@ -194,5 +278,4 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
       );
     }
   }
-
 }

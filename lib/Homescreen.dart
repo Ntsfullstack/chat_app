@@ -1,15 +1,11 @@
-import 'dart:convert';
-import 'dart:math';
 import 'package:chat_app/APIs/apis.dart';
-import 'package:chat_app/home_page/chat_detail_screen.dart';
 import 'package:chat_app/home_page/chat_user_card.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/more_widget/more_screen.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/svg.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -33,14 +29,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<ChatUser> list = [];
-  int _currentIndex = 0;
+  TextEditingController searchController = TextEditingController();
+  List<ChatUser> _list = [];
+  final List<ChatUser> _searchList = [];
+  bool _isSearching = false;
+
   @override
   void initState() {
     super.initState();
     APIs.getSelfInfo();
   }
-  // Added for tracking the current tab
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +55,8 @@ class _HomePageState extends State<HomePage> {
               color: Colors.black,
               fontSize: 25,
               fontFamily: 'Mulish',
-               height: 1,
+              height: 1,
             ),
-
           ),
         ),
         actions: [
@@ -72,22 +69,40 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           Container(
-            height: 58,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            height: 60,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             child: CupertinoTextField(
-              placeholder: 'Search',
+              onTap: () {},
+              placeholder: 'Name, Email,...',
+              autofocus: true,
+              style: const TextStyle(
+                fontSize: 18,
+                letterSpacing: 0.5,
+              ),
+              onChanged: (val) {
+                setState(() {
+                  _isSearching = val.isNotEmpty;
+                });
+                _searchList.clear();
+                for (var i in _list) {
+                  if (i.name.toLowerCase().contains(val.toLowerCase()) ||
+                      i.email.toLowerCase().contains(val.toLowerCase())) {
+                    _searchList.add(i);
+                  }
+                }
+              },
               prefix: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 5),
-                child: Icon(Icons.search, color: Color.fromARGB(66, 0, 0, 0)),
+                child: Icon(Icons.search, color: Colors.black),
               ),
               placeholderStyle:
-              const TextStyle(color: Color.fromARGB(66, 0, 0, 0)),
+                  const TextStyle(color: Color.fromARGB(66, 0, 0, 0)),
               decoration: BoxDecoration(
                 border: Border.all(
-                  style: BorderStyle.none,
+                  color: const Color(0xFFC1C4D3),
+                  width: 1,
                 ),
-                color: const Color.fromARGB(255, 235, 234, 234),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.0),
               ),
             ),
           ),
@@ -102,13 +117,20 @@ class _HomePageState extends State<HomePage> {
                   case ConnectionState.active:
                   case ConnectionState.done:
                     final data = snapshot.data?.docs;
-                    list = data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
-                    if (list.isNotEmpty) {
+                    _list = data
+                            ?.map((e) => ChatUser.fromJson(e.data()))
+                            .toList() ??
+                        [];
+                    if (_list.isNotEmpty) {
                       return ListView.builder(
-                        itemCount: list.length,
+                        itemCount:
+                            _isSearching ? _searchList.length : _list.length,
                         physics: const BouncingScrollPhysics(),
                         itemBuilder: (context, index) {
-                          return ChatUserCard(user: list[index]);
+                          return ChatUserCard(
+                              user: _isSearching
+                                  ? _searchList[index]
+                                  : _list[index]);
                         },
                       );
                     } else {
@@ -126,25 +148,18 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
+        currentIndex: 0,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-
-          // You can add logic to navigate to different screens based on the index
+          setState(() {});
           switch (index) {
             case 0:
-            // Navigate to the first screen (Chats)
               break;
             case 1:
-            // Navigate to the second screen (New Message)
               break;
             case 2:
-            // Navigate to the third screen (More)
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MoreLight()),
+                MaterialPageRoute(builder: (_) => MoreLight(user: APIs.me)),
               );
               break;
           }
@@ -167,9 +182,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-
-
-
-
-
