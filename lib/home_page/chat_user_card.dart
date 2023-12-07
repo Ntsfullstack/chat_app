@@ -12,91 +12,96 @@ import '../main.dart';
 class ChatUserCard extends StatefulWidget {
   final ChatUser user;
 
-  const ChatUserCard({super.key, required this.user});
+  const ChatUserCard({Key? key, required this.user}) : super(key: key);
 
   @override
   State<ChatUserCard> createState() => _ChatUserCardState();
 }
 
 class _ChatUserCardState extends State<ChatUserCard> {
-  //last message info (if null --> no message)
   Message? _message;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      // color: Colors.blue.shade100,
       elevation: 0.1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
-          onTap: () {
-            //for navigating to chat screen
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => ChatScreen(user: widget.user)));
-          },
-          child: StreamBuilder(
-            stream: APIs.getLastMessage(widget.user),
-            builder: (context, snapshot) {
-              final data = snapshot.data?.docs;
-              final list =
-                  data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
-              if (list.isNotEmpty) _message = list[0];
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ChatScreen(user: widget.user),
+            ),
+          );
+        },
+        child: StreamBuilder(
+          stream: APIs.getLastMessage(widget.user),
+          builder: (context, snapshot) {
+            final data = snapshot.data?.docs;
+            final list =
+                data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
+            if (list.isNotEmpty) _message = list[0];
 
-              return ListTile(
-                //user profile picture
-                leading: InkWell(
-                  onTap: () {},
-                  child: ClipRRect(
+            return ListTile(
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              leading: Stack(
+                children: [
+                  // User profile picture
+                  ClipRRect(
                     borderRadius: BorderRadius.circular(17),
                     child: CachedNetworkImage(
                       width: 50,
                       height: 50,
                       imageUrl: widget.user.image,
                       errorWidget: (context, url, error) => const CircleAvatar(
-                          child: Icon(CupertinoIcons.person)),
+                        child: Icon(CupertinoIcons.person),
+                      ),
                     ),
                   ),
-                ),
-
-                //user name
-                title: Text(widget.user.name),
-
-                //last message
-                subtitle: Text(
-                    _message != null
-                        ? _message!.type == Type.image
-                            ? 'image'
-                            : _message!.msg
-                        : widget.user.about,
-                    maxLines: 1),
-
-                //last message time
-                trailing: _message == null
-                    ? null //show nothing when no message is sent
-                    : _message!.read.isEmpty &&
-                            _message!.fromId != APIs.user.uid
-                        ?
-                        //show for unread message
-                        Container(
-                            width: 15,
-                            height: 15,
-                            decoration: BoxDecoration(
-                                color: Colors.greenAccent.shade400,
-                                borderRadius: BorderRadius.circular(10)),
-                          )
-                        :
-                        //message sent time
-                        Text(
-                            MyDateUtil.getLastMessageTime(
-                                context: context, time: _message!.sent),
-                            style: const TextStyle(color: Colors.black54),
+                  // Positioned widget for the online indicator
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      width: 15,
+                      height: 15,
+                      decoration: BoxDecoration(
+                        color: Colors.greenAccent.shade400,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              title: Text(widget.user.name),
+              subtitle: Text(
+                _message != null
+                    ? _message!.type == Type.image
+                        ? 'image'
+                        : _message!.msg
+                    : widget.user.about,
+                maxLines: 1,
+              ),
+              trailing: _message == null
+                  ? null
+                  : _message!.read.isEmpty && _message!.fromId != APIs.user.uid
+                      ? Container(
+                          width: 15,
+                          height: 15,
+                        )
+                      : Text(
+                          MyDateUtil.getLastMessageTime(
+                            context: context,
+                            time: _message!.sent,
                           ),
-              );
-            },
-          )),
+                          style: const TextStyle(color: Colors.black54),
+                        ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
