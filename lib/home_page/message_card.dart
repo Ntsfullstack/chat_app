@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/APIs/apis.dart';
 import 'package:chat_app/helper/my_date_util.dart';
 import 'package:chat_app/models/message.dart';
@@ -33,40 +34,58 @@ class _MessageCardState extends State<MessageCard> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Flexible(
-            child: Container(
-              padding: EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: Color(0xFFEEE9E9),
-                border: Border.all(color: Colors.lightBlue),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 220, // Set your desired maximum width here
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.message.msg,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      color: Colors.black,
-                      fontFamily: 'Mulish',
-                    ),
+              child: Container(
+                padding: EdgeInsets.all(15),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFFFFFF),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                    bottomRight: Radius.circular(20),
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    MyDateUtil.getFormattedTime(
-                      context: context,
-                      time: widget.message.sent,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    widget.message.type == Type.text
+                        ? Text(
+                            widget.message.msg,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                              fontFamily: 'Mulish',
+                            ),
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: CachedNetworkImage(
+                              imageUrl: widget.message.msg,
+                              placeholder: (context, url) => const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.image, size: 70),
+                            ),
+                          ),
+                    const SizedBox(height: 10),
+                    Text(
+                      MyDateUtil.getFormattedTime(
+                        context: context,
+                        time: widget.message.sent,
+                      ),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFFADB5BD),
+                      ),
                     ),
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -82,40 +101,63 @@ class _MessageCardState extends State<MessageCard> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Flexible(
-            child: Container(
-              padding: EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: Color(0xFF67A0EA),
-                border: Border.all(color: Colors.lightBlue),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomLeft: Radius.circular(20),
-                ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(
+                maxWidth: 220, // Set your desired maximum width here
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.message.msg,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      color: Colors.black,
-                      fontFamily: 'Mulish',
-                    ),
+              child: Container(
+                padding:
+                    EdgeInsets.all(widget.message.type == Type.image ? 30 : 30),
+                decoration: BoxDecoration(
+                  color: Color(0xFF375FFF),
+                  border: Border.all(color: Colors.lightBlue),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                    bottomLeft: Radius.circular(20),
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    MyDateUtil.getFormattedTime(
-                      context: context,
-                      time: widget.message.sent,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    widget.message.type == Type.text
+                        ? Text(
+                            widget.message.msg,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontFamily: 'Mulish',
+                            ),
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: CachedNetworkImage(
+                              imageUrl: widget.message.msg,
+                              placeholder: (context, url) => const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                              errorWidget: (context, url, error) {
+                                print('Error loading image: $error');
+                                return const Icon(Icons.error,
+                                    size: 70, color: Colors.red);
+                              },
+                            ),
+                          ),
+                    const SizedBox(height: 10),
+                    Text(
+                      MyDateUtil.getFormattedTime(
+                        context: context,
+                        time: widget.message.sent,
+                      ),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.white,
+                      ),
                     ),
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

@@ -24,8 +24,8 @@ class _ChatUserCardState extends State<ChatUserCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-      elevation: 0.1,
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: InkWell(
         onTap: () {
@@ -45,12 +45,12 @@ class _ChatUserCardState extends State<ChatUserCard> {
             if (list.isNotEmpty) _message = list[0];
 
             return ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 1),
               leading: Stack(
                 children: [
                   // User profile picture
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(17),
+                    borderRadius: BorderRadius.circular(15),
                     child: CachedNetworkImage(
                       width: 50,
                       height: 50,

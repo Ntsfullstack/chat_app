@@ -1,25 +1,11 @@
 import 'package:chat_app/APIs/apis.dart';
+import 'package:chat_app/bottom_bar_screen/bottom_bar_screen.dart';
 import 'package:chat_app/home_page/chat_user_card.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/more_widget/more_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Your App Title',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(),
-    );
-  }
-}
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key});
@@ -37,7 +23,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    APIs.getSelfInfo();
   }
 
   @override
@@ -74,7 +59,7 @@ class _HomePageState extends State<HomePage> {
             child: CupertinoTextField(
               onTap: () {},
               placeholder: 'Name, Email,...',
-              autofocus: true,
+              autofocus: false,
               style: const TextStyle(
                 fontSize: 18,
                 letterSpacing: 0.5,
@@ -144,38 +129,6 @@ class _HomePageState extends State<HomePage> {
                 }
               },
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: (index) {
-          setState(() {});
-          switch (index) {
-            case 0:
-              break;
-            case 1:
-              break;
-            case 2:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => MoreLight(user: APIs.me)),
-              );
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chats',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'New Message',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.more),
-            label: 'More',
           ),
         ],
       ),

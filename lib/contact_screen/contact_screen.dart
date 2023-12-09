@@ -1,5 +1,6 @@
 import 'package:chat_app/APIs/apis.dart';
 import 'package:chat_app/bottom_bar_screen/bottom_bar_screen.dart';
+import 'package:chat_app/contact_screen/contact_user_card.dart';
 import 'package:chat_app/home_page/chat_user_card.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/more_widget/more_screen.dart';
@@ -7,14 +8,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key});
+class CntactsPage extends StatefulWidget {
+  const CntactsPage({Key? key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<CntactsPage> createState() => _CntactsPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _CntactsPageState extends State<CntactsPage> {
   TextEditingController searchController = TextEditingController();
   List<ChatUser> _list = [];
   final List<ChatUser> _searchList = [];
@@ -60,7 +61,7 @@ class _HomePageState extends State<HomePage> {
             child: CupertinoTextField(
               onTap: () {},
               placeholder: 'Name, Email,...',
-              autofocus: true,
+              autofocus: false,
               style: const TextStyle(
                 fontSize: 18,
                 letterSpacing: 0.5,
@@ -113,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                             _isSearching ? _searchList.length : _list.length,
                         physics: const BouncingScrollPhysics(),
                         itemBuilder: (context, index) {
-                          return ChatUserCard(
+                          return Contact_user_Card(
                               user: _isSearching
                                   ? _searchList[index]
                                   : _list[index]);

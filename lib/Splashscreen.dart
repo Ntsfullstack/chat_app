@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:chat_app/loginWithGoogle.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -40,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
         // ignore: use_build_context_synchronously
         Navigator.of(context!).pushReplacement(
           MaterialPageRoute(
-            builder: (context) =>  const InputPhoneNumber(),
+            builder: (context) => const InputPhoneNumber(),
           ),
         );
       }
@@ -63,14 +62,14 @@ class _SplashScreenState extends State<SplashScreen> {
       // Do something with deviceToken
 
       // Uncomment the following line if you need to perform some action after getting the token.
-       _onTokenRefresh(deviceToken);
+      _onTokenRefresh(deviceToken);
     });
   }
 
   // Uncomment the following function if you need to perform some action after getting the token.
-   void _onTokenRefresh(String? token) {
-  //   // Perform your action with the token
-   }
+  void _onTokenRefresh(String? token) {
+    //   // Perform your action with the token
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,11 +115,9 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
           InkWell(
             onTap: () async {
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                      builder: (context)=>  const InputPhoneNumber(),
-                  )
-              );
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => const InputPhoneNumber(),
+              ));
             },
             child: Container(
               margin: const EdgeInsets.only(

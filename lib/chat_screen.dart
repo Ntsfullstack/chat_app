@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/APIs/apis.dart';
@@ -8,6 +7,7 @@ import 'package:chat_app/models/message.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatUser user;
@@ -40,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.white,
-              elevation: 1,
+              elevation: 0.5,
               automaticallyImplyLeading: false,
               flexibleSpace: _appBar(),
               actions: [
@@ -48,7 +48,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   onPressed: () {
                     // Handle search action
                   },
-                  icon: const Icon(Icons.search, color: Colors.black54),
+                  icon: const Icon(Icons.search, color: Colors.black),
                 ),
                 PopupMenuButton(
                   icon: const Icon(
@@ -123,6 +123,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   )
               ],
             ),
+            backgroundColor: Color(0xFFF7F7FC),
           ),
         ),
       ),
@@ -212,8 +213,17 @@ class _ChatScreenState extends State<ChatScreen> {
                     onPressed: () => {},
                     icon: const Icon(Icons.image, color: Colors.black54),
                   ),
+                  //take img from camera
                   IconButton(
-                    onPressed: () => {},
+                    onPressed: () async {
+                      final ImagePicker picker = ImagePicker();
+                      final XFile? image =
+                          await picker.pickImage(source: ImageSource.camera);
+                      if (image != null) {
+                        print('image path : ${image.path}');
+                        await APIs.sendChatImage(widget.user, File(image.path));
+                      }
+                    },
                     icon: const Icon(Icons.camera_alt_rounded,
                         color: Colors.black54),
                   ),
@@ -226,7 +236,8 @@ class _ChatScreenState extends State<ChatScreen> {
           MaterialButton(
               onPressed: () {
                 if (_textController.text.isNotEmpty) {
-                  APIs.sendMessage(widget.user, _textController.text);
+                  APIs.sendMessage(
+                      widget.user, _textController.text, Type.text);
                   _textController.text = '';
                 }
               },

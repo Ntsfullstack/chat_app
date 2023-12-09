@@ -62,6 +62,7 @@ class APIs {
     });
   }
 
+//update profile picture
   static Future<void> updateProfilePicture(File file) async {
     final ext = file.path.split('.').last;
     print('Extension: $ext');
@@ -92,13 +93,15 @@ class APIs {
         .snapshots();
   }
 
-  static Future<void> sendMessage(ChatUser ChatUser, String msg) async {
+//for sending message
+  static Future<void> sendMessage(
+      ChatUser ChatUser, String msg, Type type) async {
     final time = DateTime.now().millisecondsSinceEpoch.toString();
     final Message message = Message(
         toId: ChatUser.id,
         msg: msg,
         read: '',
-        type: Type.text,
+        type: type,
         fromId: user.uid,
         sent: time);
     final ref = APIs.firestore
@@ -120,5 +123,25 @@ class APIs {
         .orderBy('sent', descending: true)
         .limit(1)
         .snapshots();
+  }
+
+  static Future<void> sendChatImage(ChatUser chatUser, File file) async {
+    //getting image file extension
+    final ext = file.path.split('.').last;
+
+    //storage file ref with path
+    final ref = storage.ref().child(
+        'images/${getConversationID(chatUser.id)}/${DateTime.now().millisecondsSinceEpoch}.$ext');
+
+    //uploading image
+    await ref
+        .putFile(file, SettableMetadata(contentType: 'image/$ext'))
+        .then((p0) {
+      print('Data Transferred: ${p0.bytesTransferred / 1000} kb');
+    });
+
+    //updating image in firestore database
+    final imageUrl = await ref.getDownloadURL();
+    await sendMessage(chatUser, imageUrl, Type.image);
   }
 }

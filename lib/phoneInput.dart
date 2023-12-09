@@ -2,6 +2,7 @@
 
 import 'package:chat_app/APIs/apis.dart';
 import 'package:chat_app/Homescreen.dart';
+import 'package:chat_app/bottom_bar_screen/bottom_bar_screen.dart';
 import 'package:chat_app/otp_verification.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -166,7 +167,6 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
                     ],
                   ),
                 ),
-
               ),
             ],
           ),
@@ -191,13 +191,13 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
       if (await APIs.userExists()) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const HomePage()),
+          MaterialPageRoute(builder: (_) => const BottomBarScreen()),
         );
       } else {
         await APIs.createUser().then((value) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const HomePage()),
+            MaterialPageRoute(builder: (_) => const BottomBarScreen()),
           );
         });
       }
@@ -210,7 +210,7 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication? googleAuth =
-    await googleUser?.authentication;
+        await googleUser?.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(

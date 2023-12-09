@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/APIs/apis.dart';
 import 'package:chat_app/models/chat_user.dart';
@@ -6,18 +5,29 @@ import 'package:chat_app/more_widget/profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 class MoreLight extends StatefulWidget {
-  final ChatUser user;
-
-   MoreLight({Key? key, required this.user}) : super(key: key);
+  const MoreLight({Key? key}) : super(key: key);
 
   @override
   _MoreLightState createState() => _MoreLightState();
 }
 
-
 class _MoreLightState extends State<MoreLight> {
+  late ChatUser user;
+
+  @override
+  void initState() {
+    super.initState();
+    try {
+      APIs.getSelfInfo();
+      setState(() {
+        user = APIs.me;
+      });
+    } catch (e) {
+      print('Lỗi khi lấy thông tin người dùng trong MoreLight: $e');
+    }
+  }
+
   Widget buildSettingRow(String title, IconData icon) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -43,17 +53,19 @@ class _MoreLightState extends State<MoreLight> {
 
   @override
   Widget build(BuildContext context) {
+    // Kiểm tra xem user có null hay không và xử lý tương ứng
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            // Top section with user details
+            // Phần trên cùng với chi tiết người dùng
             GestureDetector(
               onTap: () {
-                Navigator.push(context,
-                MaterialPageRoute(builder: (_) => ProfileScreen(user: APIs.me))
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => ProfileScreen(user: user)),
                 );
-                // Handle user details tap
+                // Xử lý khi nhấp vào chi tiết người dùng
               },
               child: Container(
                 padding: const EdgeInsets.all(16),
@@ -61,7 +73,7 @@ class _MoreLightState extends State<MoreLight> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // User details
+                    // Chi tiết người dùng
                     Row(
                       children: [
                         Container(
@@ -72,27 +84,27 @@ class _MoreLightState extends State<MoreLight> {
                             color: Color(0xFFECECEC),
                           ),
                           child: Center(
-                            child: widget.user.image != null
+                            child: user.image != null
                                 ? CachedNetworkImage(
-                              width: 60,
-                              height: 60,
-                              imageUrl: widget.user.image ?? '',
-                              imageBuilder: (context, imageProvider) =>
-                                  CircleAvatar(
-                                    backgroundImage: imageProvider,
-                                  ),
-                              placeholder: (context, url) =>
-                              const CircleAvatar(
-                                child: Icon(CupertinoIcons.person),
-                              ),
-                              errorWidget: (context, url, error) =>
-                              const CircleAvatar(
-                                child: Icon(CupertinoIcons.person),
-                              ),
-                            )
+                                    width: 60,
+                                    height: 60,
+                                    imageUrl: user.image!,
+                                    imageBuilder: (context, imageProvider) =>
+                                        CircleAvatar(
+                                      backgroundImage: imageProvider,
+                                    ),
+                                    placeholder: (context, url) =>
+                                        const CircleAvatar(
+                                      child: Icon(CupertinoIcons.person),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        const CircleAvatar(
+                                      child: Icon(CupertinoIcons.person),
+                                    ),
+                                  )
                                 : const CircleAvatar(
-                              child: Icon(CupertinoIcons.person),
-                            ),
+                                    child: Icon(CupertinoIcons.person),
+                                  ),
                           ),
                         ),
                         const SizedBox(width: 20),
@@ -100,7 +112,7 @@ class _MoreLightState extends State<MoreLight> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.user.name ?? 'User name',
+                              user.name ?? 'Tên người dùng',
                               style: const TextStyle(
                                 color: Color(0xFF0F1828),
                                 fontSize: 20,
@@ -111,7 +123,7 @@ class _MoreLightState extends State<MoreLight> {
                             ),
                             const SizedBox(height: 1),
                             Text(
-                              widget.user.email ?? '+62 1309 - 1710 - 1920',
+                              user.email ?? '+62 1309 - 1710 - 1920',
                               style: const TextStyle(
                                 color: Color(0xFFADB5BD),
                                 fontSize: 15,
@@ -122,7 +134,7 @@ class _MoreLightState extends State<MoreLight> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              widget.user.about ?? '+62 1309 - 1710 - 1920',
+                              user.about ?? '+62 1309 - 1710 - 1920',
                               style: const TextStyle(
                                 color: Color(0xFF9399A1),
                                 fontSize: 15,
@@ -135,14 +147,14 @@ class _MoreLightState extends State<MoreLight> {
                         ),
                       ],
                     ),
-                    // Logout button
+                    // Nút Logout
                   ],
                 ),
               ),
             ),
 
             const SizedBox(height: 20),
-            // Middle section with various settings
+            // Phần giữa với các thiết lập khác nhau
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(16),
@@ -150,30 +162,29 @@ class _MoreLightState extends State<MoreLight> {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    buildSettingRow('Account', Icons.account_circle),
+                    buildSettingRow('Tài khoản', Icons.account_circle),
                     const SizedBox(height: 30),
                     buildSettingRow('Chats', Icons.chat),
                     const SizedBox(height: 30),
-                    buildSettingRow('Appearance', Icons.color_lens),
+                    buildSettingRow('Giao diện', Icons.color_lens),
                     const SizedBox(height: 30),
-                    buildSettingRow('Notification', Icons.notifications),
+                    buildSettingRow('Thông báo', Icons.notifications),
                     const SizedBox(height: 30),
-                    buildSettingRow('Privacy', Icons.privacy_tip),
+                    buildSettingRow('Quyền riêng tư', Icons.privacy_tip),
                     const SizedBox(height: 30),
-                    buildSettingRow('Data Usage', Icons.data_usage),
+                    buildSettingRow('Sử dụng dữ liệu', Icons.data_usage),
                     const SizedBox(height: 30),
-                    buildSettingRow('Help', Icons.help),
+                    buildSettingRow('Trợ giúp', Icons.help),
                     const SizedBox(height: 30),
-                    buildSettingRow('Invite Your Friends', Icons.person_add),
+                    buildSettingRow('Mời bạn bè', Icons.person_add),
                   ],
                 ),
               ),
             ),
-            // Bottom section with progress indicator
+            // Phần dưới cùng với chỉ báo tiến trình
           ],
         ),
       ),
-
     );
   }
 }
