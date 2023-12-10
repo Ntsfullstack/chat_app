@@ -13,7 +13,7 @@ class BottomBarScreen extends StatefulWidget {
 }
 
 class _BottomBarScreenState extends State<BottomBarScreen> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
   late PageController controller;
 
   final pages = [

@@ -121,8 +121,8 @@ class _SplashScreenState extends State<SplashScreen> {
             },
             child: Container(
               margin: const EdgeInsets.only(
-                top: 18,
-                bottom: 20,
+                top: 20,
+                bottom: 45,
                 left: 24,
                 right: 24,
               ),

@@ -97,6 +97,7 @@ class APIs {
   static Future<void> sendMessage(
       ChatUser ChatUser, String msg, Type type) async {
     final time = DateTime.now().millisecondsSinceEpoch.toString();
+
     final Message message = Message(
         toId: ChatUser.id,
         msg: msg,
@@ -104,7 +105,7 @@ class APIs {
         type: type,
         fromId: user.uid,
         sent: time);
-    final ref = APIs.firestore
+    final ref = firestore
         .collection('chats/${getConversationID(ChatUser.id)}/messages');
     await ref.doc().set(message.toJson());
   }

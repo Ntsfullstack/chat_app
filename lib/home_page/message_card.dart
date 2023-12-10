@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/APIs/apis.dart';
 import 'package:chat_app/helper/my_date_util.dart';
+import 'package:chat_app/main.dart';
 import 'package:chat_app/models/message.dart';
 import 'package:flutter/material.dart';
 
@@ -55,7 +56,7 @@ class _MessageCardState extends State<MessageCard> {
                         ? Text(
                             widget.message.msg,
                             style: const TextStyle(
-                              fontSize: 18,
+                              fontSize: 19,
                               color: Colors.black,
                               fontFamily: 'Mulish',
                             ),
@@ -65,7 +66,7 @@ class _MessageCardState extends State<MessageCard> {
                             child: CachedNetworkImage(
                               imageUrl: widget.message.msg,
                               placeholder: (context, url) => const Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: EdgeInsets.all(0.0),
                                 child:
                                     CircularProgressIndicator(strokeWidth: 2),
                               ),
@@ -107,7 +108,7 @@ class _MessageCardState extends State<MessageCard> {
               ),
               child: Container(
                 padding:
-                    EdgeInsets.all(widget.message.type == Type.image ? 30 : 30),
+                    EdgeInsets.all(widget.message.type == Type.image ? 15 : 15),
                 decoration: BoxDecoration(
                   color: Color(0xFF375FFF),
                   border: Border.all(color: Colors.lightBlue),
@@ -121,12 +122,15 @@ class _MessageCardState extends State<MessageCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     widget.message.type == Type.text
-                        ? Text(
-                            widget.message.msg,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontFamily: 'Mulish',
+                        ? Padding(
+                            padding: const EdgeInsets.only(bottom: 1),
+                            child: Text(
+                              widget.message.msg,
+                              style: const TextStyle(
+                                fontSize: 19,
+                                color: Colors.white,
+                                fontFamily: 'Mulish',
+                              ),
                             ),
                           )
                         : ClipRRect(
@@ -134,9 +138,9 @@ class _MessageCardState extends State<MessageCard> {
                             child: CachedNetworkImage(
                               imageUrl: widget.message.msg,
                               placeholder: (context, url) => const Padding(
-                                padding: EdgeInsets.all(8.0),
+                                padding: EdgeInsets.all(0.0),
                                 child:
-                                    CircularProgressIndicator(strokeWidth: 2),
+                                    CircularProgressIndicator(strokeWidth: 1),
                               ),
                               errorWidget: (context, url, error) {
                                 print('Error loading image: $error');
@@ -145,15 +149,18 @@ class _MessageCardState extends State<MessageCard> {
                               },
                             ),
                           ),
-                    const SizedBox(height: 10),
-                    Text(
-                      MyDateUtil.getFormattedTime(
-                        context: context,
-                        time: widget.message.sent,
-                      ),
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.white,
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 2),
+                      child: Text(
+                        MyDateUtil.getFormattedTime(
+                          context: context,
+                          time: widget.message.sent,
+                        ),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],
