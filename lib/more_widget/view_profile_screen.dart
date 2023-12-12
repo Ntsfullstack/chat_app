@@ -38,7 +38,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
             const Text(
               'Joined On: ',
               style: TextStyle(
-                  color: Colors.black87,
+                  color: Colors.blue,
                   fontWeight: FontWeight.w500,
                   fontSize: 18),
             ),

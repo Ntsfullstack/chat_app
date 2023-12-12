@@ -1,3 +1,4 @@
+import 'package:chat_app/dialogs/profile_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -48,14 +49,22 @@ class _ChatUserCardState extends State<ChatUserCard> {
               leading: Stack(
                 children: [
                   // User profile picture
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      width: 50,
-                      height: 50,
-                      imageUrl: widget.user.image,
-                      errorWidget: (context, url, error) => const CircleAvatar(
-                        child: Icon(CupertinoIcons.person),
+                  InkWell(
+                    onTap: () {
+                      showDialog(
+                          context: context,
+                          builder: (_) => Profile_dialog(user: widget.user));
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: CachedNetworkImage(
+                        width: 50,
+                        height: 50,
+                        imageUrl: widget.user.image,
+                        errorWidget: (context, url, error) =>
+                            const CircleAvatar(
+                          child: Icon(CupertinoIcons.person),
+                        ),
                       ),
                     ),
                   ),
