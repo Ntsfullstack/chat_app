@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/APIs/apis.dart';
-import 'package:chat_app/Homescreen.dart';
 import 'package:chat_app/chat_screen.dart';
 import 'package:chat_app/helper/my_date_util.dart';
 import 'package:chat_app/models/chat_user.dart';
@@ -25,7 +24,7 @@ class _ChatUserCardState extends State<ChatUserCard> {
   Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      elevation: 4,
+      elevation: 0.2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: InkWell(
         onTap: () {
@@ -60,19 +59,20 @@ class _ChatUserCardState extends State<ChatUserCard> {
                       ),
                     ),
                   ),
-                  // Positioned widget for the online indicator
+                  // Positioned widget for the online indicator\
                   Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 15,
-                      height: 15,
-                      decoration: BoxDecoration(
-                        color: Colors.greenAccent.shade400,
-                        borderRadius: BorderRadius.circular(10),
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 15,
+                        height: 15,
+                        decoration: BoxDecoration(
+                          color: Colors.greenAccent.shade400,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      )
+                      // Hide the online indicator when the user is not online
                       ),
-                    ),
-                  ),
                 ],
               ),
               title: Text(widget.user.name),

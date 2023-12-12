@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,9 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 
-
 class ProfileScreen extends StatefulWidget {
   final ChatUser user;
+
   const ProfileScreen({super.key, required this.user});
 
   @override
@@ -23,12 +22,10 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _image ;
+  String? _image;
 
   @override
   Widget build(BuildContext context) {
-
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -38,20 +35,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: FloatingActionButton.extended(
             onPressed: () async {
               Dialogs.showProgressBar(context);
+              await APIs.updateActiveStatus(false);
               await APIs.auth.signOut().then((value) async {
-                await GoogleSignIn().signOut().then((value){
+                await GoogleSignIn().signOut().then((value) {
                   Navigator.pop(context);
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const SplashScreen()),
-                        (Route<dynamic> route) => false,
+                    MaterialPageRoute(
+                        builder: (context) => const SplashScreen()),
+                    (Route<dynamic> route) => false,
                   );
                 });
-
               });
-
             },
-             icon: const Icon(Icons.logout, ),
+            icon: const Icon(
+              Icons.logout,
+            ),
             label: const Text('Logout'),
           ),
         ),
@@ -65,72 +64,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 20),
                   Stack(
                     children: [
-                      _image !=null ?
-                  ClipRRect(
-                  borderRadius: BorderRadius.circular(80),
-                child: Image.file(File(_image!),
-                width: 150,
-                height: 150,
-                fit: BoxFit.cover,
-
-              ),
-            ):
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(80),
-                        child: CachedNetworkImage(
-                          width: 150,
-                          height: 150,
-                          fit: BoxFit.cover,
-                          imageUrl: widget.user.image ?? '', // Ensure imageUrl is not null
-                          placeholder: (context, url) =>
-                              const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                          const CircleAvatar(
-                              child: Icon(CupertinoIcons.person)),
-                        ),
-                      ),
+                      _image != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(80),
+                              child: Image.file(
+                                File(_image!),
+                                width: 150,
+                                height: 150,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(80),
+                              child: CachedNetworkImage(
+                                width: 150,
+                                height: 150,
+                                fit: BoxFit.cover,
+                                imageUrl: widget.user.image ?? '',
+                                // Ensure imageUrl is not null
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const CircleAvatar(
+                                        child: Icon(CupertinoIcons.person)),
+                              ),
+                            ),
                       Positioned(
                         bottom: 0,
                         right: -20,
                         child: MaterialButton(
                           elevation: 1,
-                          onPressed: (){
+                          onPressed: () {
                             _showBottomSheet();
                           },
                           shape: const CircleBorder(),
                           color: Colors.white,
                           child: const Icon(
-                              Icons.edit,
-                              color: Colors.blue,
+                            Icons.edit,
+                            color: Colors.blue,
                           ),
-
                         ),
                       )
                     ],
                   ),
                   const SizedBox(height: 15),
-                  Text(widget.user.email, style: const TextStyle(color: Colors.black54)),
+                  Text(widget.user.email,
+                      style: const TextStyle(color: Colors.black54)),
                   const SizedBox(height: 15),
                   TextFormField(
                     initialValue: widget.user.name,
-                    onSaved: (val) =>APIs.me.name = val ??'',
-                    validator: (val) => val != null && val.isNotEmpty
-                        ? null
-                        : 'Required Field',
+                    onSaved: (val) => APIs.me.name = val ?? '',
+                    validator: (val) =>
+                        val != null && val.isNotEmpty ? null : 'Required Field',
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.person, color: Colors.blue),
-                        border: OutlineInputBorder(),
+                      border: OutlineInputBorder(),
                       hintText: 'eg. Sondeptraivcl',
                       label: Text('Name'),
                     ),
                   ),
-                  const SizedBox(height:  25),
+                  const SizedBox(height: 25),
                   TextFormField(
                     initialValue: widget.user.about,
-                    onSaved: (val) =>APIs.me.about = val ??'',
-                    validator: (val) => val != null && val.isNotEmpty
-                        ? null
-                        : 'Required Field',
+                    onSaved: (val) => APIs.me.about = val ?? '',
+                    validator: (val) =>
+                        val != null && val.isNotEmpty ? null : 'Required Field',
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.info_outline, color: Colors.blue),
                       border: OutlineInputBorder(),
@@ -138,21 +136,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       label: Text('About'),
                     ),
                   ),
-                  const SizedBox(height:30),
-                 ElevatedButton.icon(
-                   style: ElevatedButton.styleFrom(shape: const StadiumBorder(),
-                       fixedSize: const Size(150, 50)
-                   ),
-                     onPressed:(){
-                     if(_formKey.currentState!.validate()) {
-                       _formKey.currentState!.save();
-                       APIs.updateUserInfor().then((value) => {
-                         Dialogs.showSnackbar(context,'Update Successfully')
-                       });
-                     }
-                     },
-                     icon: const Icon(Icons.edit, size: 28,),
-                     label: const Text('Update',style: TextStyle(fontSize: 19),))
+                  const SizedBox(height: 30),
+                  ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                          shape: const StadiumBorder(),
+                          fixedSize: const Size(150, 50)),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          APIs.updateUserInfor().then((value) => {
+                                Dialogs.showSnackbar(
+                                    context, 'Update Successfully')
+                              });
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.edit,
+                        size: 28,
+                      ),
+                      label: const Text(
+                        'Update',
+                        style: TextStyle(fontSize: 19),
+                      ))
                 ],
               ),
             ),
@@ -161,13 +166,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-  void _showBottomSheet(){
+
+  void _showBottomSheet() {
     showModalBottomSheet(
         context: context,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         )),
         builder: (_) {
           return ListView(
@@ -175,23 +181,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.only(top: 20),
             children: [
               const Text('Pick profile picture',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500)),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
               const SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      fixedSize: Size(100, 100)),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          fixedSize: Size(100, 100)),
                       onPressed: () async {
                         final ImagePicker picker = ImagePicker();
-                        final XFile? image = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-                        if(image !=null) {
-                          print('image path : ${image.path} -- MimeType: ${image.mimeType}');
+                        final XFile? image = await picker.pickImage(
+                            source: ImageSource.gallery, imageQuality: 80);
+                        if (image != null) {
+                          print(
+                              'image path : ${image.path} -- MimeType: ${image.mimeType}');
                           setState(() {
                             _image = image.path;
                           });
@@ -206,8 +212,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           fixedSize: Size(100, 100)),
                       onPressed: () async {
                         final ImagePicker picker = ImagePicker();
-                        final XFile? image = await picker.pickImage(source: ImageSource.camera);
-                        if(image !=null) {
+                        final XFile? image =
+                            await picker.pickImage(source: ImageSource.camera);
+                        if (image != null) {
                           print('image path : ${image.path}');
                           setState(() {
                             _image = image.path;
@@ -221,8 +228,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               )
             ],
           );
-
-    }
-    );
+        });
   }
 }

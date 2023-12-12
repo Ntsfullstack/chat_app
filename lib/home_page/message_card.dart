@@ -133,14 +133,18 @@ class _MessageCardState extends State<MessageCard> {
                               ),
                             ),
                           )
+                        //show image
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(15),
                             child: CachedNetworkImage(
                               imageUrl: widget.message.msg,
                               placeholder: (context, url) => const Padding(
                                 padding: EdgeInsets.all(0.0),
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 1),
+                                child: Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 1),
+                                ),
                               ),
                               errorWidget: (context, url, error) {
                                 print('Error loading image: $error');

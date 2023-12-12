@@ -37,7 +37,7 @@ class _CntactsPageState extends State<CntactsPage> {
         title: const Padding(
           padding: EdgeInsets.only(left: 1),
           child: Text(
-            'Chats',
+            'Contacts',
             style: TextStyle(
               color: Colors.black,
               fontSize: 25,
@@ -49,7 +49,7 @@ class _CntactsPageState extends State<CntactsPage> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 24),
-            child: SvgPicture.asset('assets/vectors/ic_new_message.svg'),
+            child: SvgPicture.asset('assets/vectors/ic_add.svg'),
           )
         ],
       ),

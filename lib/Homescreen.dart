@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:chat_app/APIs/apis.dart';
 import 'package:chat_app/bottom_bar_screen/bottom_bar_screen.dart';
 import 'package:chat_app/home_page/chat_user_card.dart';
@@ -5,6 +7,7 @@ import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/more_widget/more_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,6 +26,25 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    APIs.getSelfInfo();
+
+    //for updating user active status according to lifecycle events
+    //resume -- active or online
+    //pause  -- inactive or offline
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      print('Message: $message');
+
+      if (APIs.auth.currentUser != null) {
+        if (message.toString().contains('resume')) {
+          APIs.updateActiveStatus(true);
+        }
+        if (message.toString().contains('pause')) {
+          APIs.updateActiveStatus(false);
+        }
+      }
+
+      return Future.value(message);
+    });
   }
 
   @override
