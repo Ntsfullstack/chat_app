@@ -69,7 +69,8 @@ class _ChatUserCardState extends State<ChatUserCard> {
                     ),
                   ),
                   // Positioned widget for the online indicator\
-                  Positioned(
+                  /*
+                   Positioned(
                       bottom: 0,
                       right: 0,
                       child: Container(
@@ -81,7 +82,7 @@ class _ChatUserCardState extends State<ChatUserCard> {
                         ),
                       )
                       // Hide the online indicator when the user is not online
-                      ),
+                      ), */
                 ],
               ),
               title: Text(widget.user.name),

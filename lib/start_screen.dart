@@ -49,7 +49,6 @@ class _StartScreenState extends State<StartScreen> {
               ),
             ),
           ),
-          //google login button
           // Thêm các phần khác vào đây nếu cần
         ],
       ),
