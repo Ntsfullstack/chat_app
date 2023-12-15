@@ -100,10 +100,9 @@ class _ChatUserCardState extends State<ChatUserCard> {
                             context: context,
                             time: _message!.sent,
                           ),
-                          style: const TextStyle(color: Colors.black54),
                         ),
                         SizedBox(width: 8), // Adjust the spacing as needed
-                        Container(
+                        /*Container(
                           width: 25,
                           height: 25,
                           decoration: BoxDecoration(
@@ -121,7 +120,7 @@ class _ChatUserCardState extends State<ChatUserCard> {
                               ),
                             ),
                           ),
-                        ),
+                        ), */
                       ],
                     ),
             );

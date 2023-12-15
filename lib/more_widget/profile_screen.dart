@@ -30,7 +30,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Your Profile')),
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text('Your Profile'),
+          iconTheme: IconThemeData(color: Colors.blue), // Đổi màu ở đây
+        ),
         floatingActionButton: Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: FloatingActionButton.extended(

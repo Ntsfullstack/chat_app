@@ -22,11 +22,9 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          elevation: 1,
-          backgroundColor: Colors.white,
-          title: Text(widget.user.name,
-              style: const TextStyle(color: Colors.black87, fontSize: 20)),
-          iconTheme: IconThemeData(color: Colors.black),
+          elevation: 0.5,
+          title: Text(widget.user.name, style: const TextStyle(fontSize: 20)),
+          iconTheme: IconThemeData(color: Colors.blue),
         ),
         floatingActionButton: //user about
             Row(
@@ -44,7 +42,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                   context: context,
                   time: widget.user.createdAt,
                 ),
-                style: const TextStyle(color: Colors.black54, fontSize: 18)),
+                style: const TextStyle(fontSize: 18)),
           ],
         ),
         body: Padding(
@@ -70,7 +68,7 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                 const SizedBox(height: 15),
                 Text(
                   widget.user.email,
-                  style: const TextStyle(color: Colors.black, fontSize: 18),
+                  style: const TextStyle(fontSize: 18),
                 ),
                 const SizedBox(height: 18),
                 Row(
@@ -78,14 +76,12 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                   children: [
                     const Text(
                       'About: ',
-                      style: TextStyle(
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
                     ),
                     Text(
                       widget.user.about,
-                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                      style: const TextStyle(fontSize: 18),
                     ),
                   ],
                 ),
