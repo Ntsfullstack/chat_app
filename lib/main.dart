@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_notification_channel/flutter_notification_channel.dart';
 import 'package:flutter_notification_channel/notification_importance.dart';
-import 'Splashscreen.dart';
+import 'splashscreen.dart';
 import 'firebase_options.dart';
 
 late Size mq;

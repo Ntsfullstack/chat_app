@@ -160,7 +160,59 @@ class APIs {
   static Future<void> updateProfilePicture(File file) async {
     final ext = file.path.split('.').last;
     print('Extension: $ext');
-    final ref = storage.ref().child('profile_picture/${user.uid}.$ext');
+
+    // Use the user's UID and a timestamp as part of the storage path
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final ref = storage
+        .ref()
+        .child('profile_pictures/${user.uid}/profile_picture_$timestamp.$ext');
+
+    // Uploading image
+    await ref
+        .putFile(file, SettableMetadata(contentType: 'image/$ext'))
+        .then((p0) {
+      print('Data transferred: ${p0.bytesTransferred / 1000} kb');
+    });
+
+    // Updating image in Firestore
+    me.image = await ref.getDownloadURL();
+    await firestore
+        .collection('users')
+        .doc(user.uid)
+        .update({'image': me.image});
+  }
+
+  static Future<List<String>> getAllUserImages(String uid) async {
+    List<String> userImages = [];
+
+    try {
+      // Ensure that uid is not null before accessing it
+      if (uid != null) {
+        // Reference to the user's profile pictures folder
+        final userImagesRef = storage.ref().child('profile_pictures/$uid');
+
+        // Get all items (images) in the folder
+        final ListResult result = await userImagesRef.listAll();
+
+        // Loop through each item and add download URL to the list
+        for (final Reference ref in result.items) {
+          final String downloadURL = await ref.getDownloadURL();
+          userImages.add(downloadURL);
+        }
+      } else {
+        print('Error: User ID is null.');
+      }
+    } catch (e) {
+      print('Error fetching user images: $e');
+    }
+
+    return userImages;
+  }
+
+  static Future<void> UpStory(File file) async {
+    final ext = file.path.split('.').last;
+    print('Extension: $ext');
+    final ref = storage.ref().child('story/${user.uid}.$ext');
     //uploading imagge
     await ref
         .putFile(file, SettableMetadata(contentType: 'image/$ext'))
@@ -168,11 +220,6 @@ class APIs {
       print('Data transfered: ${p0.bytesTransferred / 1000} kb');
     });
     //updating image to fire storage database
-    me.image = await ref.getDownloadURL();
-    await firestore
-        .collection('users')
-        .doc(user.uid)
-        .update({'image': me.image});
   }
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
@@ -184,11 +231,17 @@ class APIs {
   }
 
   static Future<void> updateActiveStatus(bool isOnline) async {
-    firestore.collection('users').doc(user.uid).update({
-      'is_online': isOnline,
-      'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
-      'push_token': me.pushToken,
-    });
+    try {
+      await firestore.collection('users').doc(user.uid).update({
+        'is_online': isOnline,
+        'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
+        'push_token': me.pushToken,
+      });
+      print('Cập nhật trạng thái hoạt động thành công.');
+    } catch (error) {
+      print('Lỗi khi cập nhật trạng thái hoạt động: $error');
+      // Xử lý lỗi nếu cần
+    }
   }
 
   //* chat screen*//

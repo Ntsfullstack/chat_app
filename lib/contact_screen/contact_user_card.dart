@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/APIs/apis.dart';
-import 'package:chat_app/Homescreen.dart';
+import 'package:chat_app/home_screen.dart';
 import 'package:chat_app/chat_screen.dart';
 import 'package:chat_app/helper/my_date_util.dart';
 import 'package:chat_app/models/chat_user.dart';

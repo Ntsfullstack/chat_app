@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:chat_app/service/isar_service.dart';
-import 'package:chat_app/Homescreen.dart';
+import 'package:chat_app/home_screen.dart';
 import 'package:chat_app/phoneInput.dart';
 
 class SplashScreen extends StatefulWidget {

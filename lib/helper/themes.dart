@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ThemeClass {
   Color lightPrimaryColor = Colors.white;
-  Color darkPrimaryColor = Colors.black;
+  Color darkPrimaryColor = Colors.blue;
   Color accentColor = Colors.greenAccent;
 
   static ThemeData lightTheme = ThemeData(

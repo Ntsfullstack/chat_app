@@ -1,12 +1,9 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/APIs/apis.dart';
-import 'package:chat_app/helper/dialog.dart';
 import 'package:chat_app/helper/my_date_util.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class ViewProfileScreen extends StatefulWidget {
   final ChatUser user;
@@ -71,8 +68,10 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 15),
-                Text(widget.user.email,
-                    style: const TextStyle(color: Colors.black, fontSize: 18)),
+                Text(
+                  widget.user.email,
+                  style: const TextStyle(color: Colors.black, fontSize: 18),
+                ),
                 const SizedBox(height: 18),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -84,10 +83,48 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
                           fontWeight: FontWeight.w500,
                           fontSize: 18),
                     ),
-                    Text(widget.user.about,
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 18)),
+                    Text(
+                      widget.user.about,
+                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                    ),
                   ],
+                ),
+                FutureBuilder<List<String>>(
+                  future: APIs.getAllUserImages(widget.user.id),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Container(); // No images to display
+                    } else {
+                      return Column(
+                        children: [
+                          const SizedBox(height: 10),
+                          Text('User Images:'),
+                          SizedBox(
+                            height: 100, // Adjust the height as needed
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.network(
+                                    snapshot.data![index],
+                                    width: 90,
+                                    height: 90,
+                                    fit: BoxFit.cover,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                  },
                 ),
                 const SizedBox(height: 30),
               ],

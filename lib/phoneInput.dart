@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:chat_app/APIs/apis.dart';
-import 'package:chat_app/Homescreen.dart';
+import 'package:chat_app/home_screen.dart';
 import 'package:chat_app/bottom_bar_screen/bottom_bar_screen.dart';
 import 'package:chat_app/otp_verification.dart';
 
@@ -157,7 +157,8 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
                         FontAwesomeIcons.google,
                         color: Colors.white,
                       ),
-                      SizedBox(width: 10), // Khoảng cách giữa icon và văn bản
+                      SizedBox(width: 10),
+                      // Khoảng cách giữa icon và văn bản
                       Text(
                         "Continue with Google",
                         style: TextStyle(

@@ -1,4 +1,4 @@
-import 'package:chat_app/Homescreen.dart';
+import 'package:chat_app/home_screen.dart';
 import 'package:chat_app/phoneInput.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(MyProfileScreen());
 }
-
-
 
 class MyProfileScreen extends StatelessWidget {
   @override
@@ -54,7 +52,9 @@ class MyHomePage extends StatelessWidget {
                             // Điều hướng đến màn hình khác ở đây
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const InputPhoneNumber()), // Thay YourNextScreen() bằng màn hình bạn muốn chuyển đến
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const InputPhoneNumber()), // Thay YourNextScreen() bằng màn hình bạn muốn chuyển đến
                             );
                           },
                           icon: const Icon(
@@ -128,16 +128,19 @@ class MyHomePage extends StatelessWidget {
                         child: Container(
                           width: 237,
                           height: 36,
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 6),
                           decoration: ShapeDecoration(
                             color: const Color(0xFFF7F7FC),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
-                          child: TextFormField( // Sử dụng TextFormField thay vì Text
+                          child: TextFormField(
+                            // Sử dụng TextFormField thay vì Text
                             decoration: const InputDecoration(
-                              border: InputBorder.none, // Ẩn viền của TextFormField
+                              border:
+                                  InputBorder.none, // Ẩn viền của TextFormField
                               hintText: 'First Name (Required)',
                               hintStyle: TextStyle(
                                 color: Color(0xFFADB5BD),
@@ -145,13 +148,13 @@ class MyHomePage extends StatelessWidget {
                                 fontFamily: 'Mulish',
                               ),
                             ),
-                            style: const TextStyle( // Kiểu chữ cho nội dung nhập
+                            style: const TextStyle(
+                                // Kiểu chữ cho nội dung nhập
                                 color: Colors.black, // Màu chữ
                                 fontSize: 14,
                                 fontFamily: 'Mulish',
                                 fontWeight: FontWeight.w600,
-                                height: 0.7
-                            ),
+                                height: 0.7),
                           ),
                         ),
                       ),
@@ -162,16 +165,19 @@ class MyHomePage extends StatelessWidget {
                         child: Container(
                           width: 237,
                           height: 36,
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 6),
                           decoration: ShapeDecoration(
                             color: const Color(0xFFF7F7FC),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
-                          child: TextFormField( // Sử dụng TextFormField thay vì Text
+                          child: TextFormField(
+                            // Sử dụng TextFormField thay vì Text
                             decoration: const InputDecoration(
-                              border: InputBorder.none, // Ẩn viền của TextFormField
+                              border:
+                                  InputBorder.none, // Ẩn viền của TextFormField
                               hintText: 'Last Name (Required)',
                               hintStyle: TextStyle(
                                 color: Color(0xFFADB5BD),
@@ -181,7 +187,8 @@ class MyHomePage extends StatelessWidget {
                                 height: 0.7,
                               ),
                             ),
-                            style: const TextStyle( // Kiểu chữ cho nội dung nhập
+                            style: const TextStyle(
+                              // Kiểu chữ cho nội dung nhập
                               color: Colors.black, // Màu chữ
                               fontSize: 14,
                               fontFamily: 'Mulish',
@@ -191,7 +198,7 @@ class MyHomePage extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        left:40,
+                        left: 40,
                         right: 40,
                         top: 670,
                         child: GestureDetector(
@@ -203,7 +210,8 @@ class MyHomePage extends StatelessWidget {
                           child: Container(
                             width: 327,
                             height: 55,
-                            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 11),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 48, vertical: 11),
                             clipBehavior: Clip.antiAlias,
                             decoration: ShapeDecoration(
                               color: const Color(0xFF002DE3),

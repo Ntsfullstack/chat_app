@@ -1,12 +1,12 @@
 import 'dart:developer';
 
 import 'package:chat_app/APIs/apis.dart';
-import 'package:chat_app/Homescreen.dart';
+import 'package:chat_app/home_screen.dart';
 import 'package:chat_app/bottom_bar_screen/bottom_bar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../main.dart';
-import 'package:chat_app/Splashscreen.dart';
+import 'package:chat_app/splashscreen.dart';
 
 //splash screen
 class StartScreen extends StatefulWidget {

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:chat_app/APIs/apis.dart';
 import 'package:chat_app/bottom_bar_screen/bottom_bar_screen.dart';
 import 'package:chat_app/home_page/chat_user_card.dart';
+import 'package:chat_app/home_page/storypage.dart';
 import 'package:chat_app/home_page/str_card.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/more_widget/more_screen.dart';
@@ -8,6 +11,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key});
@@ -21,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   List<ChatUser> _list = [];
   final List<ChatUser> _searchList = [];
   bool _isSearching = false;
+  String? _image;
 
   @override
   void initState() {
@@ -83,9 +88,19 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            // Handle the onPressed event here
-                            print('Button pressed!');
+                          onTap: () async {
+                            final ImagePicker picker = ImagePicker();
+                            final XFile? image = await picker.pickImage(
+                                source: ImageSource.gallery, imageQuality: 80);
+                            if (image != null) {
+                              print(
+                                  'image path : ${image.path} -- MimeType: ${image.mimeType}');
+                              setState(() {
+                                _image = image.path;
+                              });
+                              APIs.UpStory(File(_image!));
+                            }
+                            Navigator.pop(context);
                           },
                           child: Container(
                             width: 48,

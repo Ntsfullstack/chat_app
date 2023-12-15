@@ -2,10 +2,11 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/APIs/apis.dart';
-import 'package:chat_app/Splashscreen.dart';
+import 'package:chat_app/splashscreen.dart';
 import 'package:chat_app/helper/dialog.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -14,7 +15,7 @@ import 'package:image_picker/image_picker.dart';
 class ProfileScreen extends StatefulWidget {
   final ChatUser user;
 
-  const ProfileScreen({super.key, required this.user});
+  const ProfileScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -39,6 +40,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               await APIs.auth.signOut().then((value) async {
                 await GoogleSignIn().signOut().then((value) {
                   Navigator.pop(context);
+                  APIs.auth = FirebaseAuth.instance;
+
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
@@ -81,7 +84,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 height: 150,
                                 fit: BoxFit.cover,
                                 imageUrl: widget.user.image ?? '',
-                                // Ensure imageUrl is not null
                                 placeholder: (context, url) =>
                                     const CircularProgressIndicator(),
                                 errorWidget: (context, url, error) =>
@@ -108,8 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                   const SizedBox(height: 15),
-                  Text(widget.user.email,
-                      style: const TextStyle(color: Colors.black54)),
+                  Text(widget.user.email),
                   const SizedBox(height: 15),
                   TextFormField(
                     initialValue: widget.user.name,
@@ -138,26 +139,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                          shape: const StadiumBorder(),
-                          fixedSize: const Size(150, 50)),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          APIs.updateUserInfor().then((value) => {
-                                Dialogs.showSnackbar(
-                                    context, 'Update Successfully')
-                              });
-                        }
-                      },
-                      icon: const Icon(
-                        Icons.edit,
-                        size: 28,
-                      ),
-                      label: const Text(
-                        'Update',
-                        style: TextStyle(fontSize: 19),
-                      ))
+                    style: ElevatedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                      fixedSize: const Size(150, 50),
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        APIs.updateUserInfor().then((value) => {
+                              Dialogs.showSnackbar(
+                                  context, 'Update Successfully')
+                            });
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.edit,
+                      size: 28,
+                    ),
+                    label: const Text(
+                      'Update',
+                      style: TextStyle(fontSize: 19),
+                    ),
+                  ),
+                  SizedBox(height: 25),
+                  FutureBuilder<List<String>>(
+                    future: APIs.getAllUserImages(APIs.me.id),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Container(); // No images to display
+                      } else {
+                        return Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            Text('User Images:'),
+                            SizedBox(
+                              height: 100, // Adjust the height as needed
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: snapshot.data!.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.network(
+                                      snapshot.data![index],
+                                      width: 90,
+                                      height: 90,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
@@ -169,65 +210,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showBottomSheet() {
     showModalBottomSheet(
-        context: context,
-        shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
-        )),
-        builder: (_) {
-          return ListView(
-            shrinkWrap: true,
-            padding: const EdgeInsets.only(top: 20),
-            children: [
-              const Text('Pick profile picture',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500)),
-              const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          fixedSize: Size(100, 100)),
-                      onPressed: () async {
-                        final ImagePicker picker = ImagePicker();
-                        final XFile? image = await picker.pickImage(
-                            source: ImageSource.gallery, imageQuality: 80);
-                        if (image != null) {
-                          print(
-                              'image path : ${image.path} -- MimeType: ${image.mimeType}');
-                          setState(() {
-                            _image = image.path;
-                          });
-                          APIs.updateProfilePicture(File(_image!));
-                        }
-                        Navigator.pop(context);
-                      },
-                      child: Image.asset('assets/images/add.png')),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          fixedSize: Size(100, 100)),
-                      onPressed: () async {
-                        final ImagePicker picker = ImagePicker();
-                        final XFile? image =
-                            await picker.pickImage(source: ImageSource.camera);
-                        if (image != null) {
-                          print('image path : ${image.path}');
-                          setState(() {
-                            _image = image.path;
-                          });
-                          APIs.updateProfilePicture(File(_image!));
-                        }
-                        Navigator.pop(context);
-                      },
-                      child: Image.asset('assets/images/add.png'))
-                ],
-              )
-            ],
-          );
-        });
+        ),
+      ),
+      builder: (_) {
+        return ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.only(top: 20),
+          children: [
+            const Text(
+              'Pick profile picture',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    fixedSize: const Size(100, 100),
+                  ),
+                  onPressed: () async {
+                    final ImagePicker picker = ImagePicker();
+                    final XFile? image = await picker.pickImage(
+                      source: ImageSource.gallery,
+                      imageQuality: 80,
+                    );
+                    if (image != null) {
+                      print(
+                          'image path : ${image.path} -- MimeType: ${image.mimeType}');
+                      setState(() {
+                        _image = image.path;
+                      });
+                      APIs.updateProfilePicture(File(_image!));
+                    }
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset('assets/images/add.png'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    fixedSize: const Size(100, 100),
+                  ),
+                  onPressed: () async {
+                    final ImagePicker picker = ImagePicker();
+                    final XFile? image =
+                        await picker.pickImage(source: ImageSource.camera);
+                    if (image != null) {
+                      print('image path : ${image.path}');
+                      setState(() {
+                        _image = image.path;
+                      });
+                      APIs.updateProfilePicture(File(_image!));
+                    }
+                    Navigator.pop(context);
+                  },
+                  child: Image.asset('assets/images/add.png'),
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
   }
 }
