@@ -231,17 +231,11 @@ class APIs {
   }
 
   static Future<void> updateActiveStatus(bool isOnline) async {
-    try {
-      await firestore.collection('users').doc(user.uid).update({
-        'is_online': isOnline,
-        'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
-        'push_token': me.pushToken,
-      });
-      print('Cập nhật trạng thái hoạt động thành công.');
-    } catch (error) {
-      print('Lỗi khi cập nhật trạng thái hoạt động: $error');
-      // Xử lý lỗi nếu cần
-    }
+    firestore.collection('users').doc(user.uid).update({
+      'is_online': isOnline,
+      'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
+      'push_token': me.pushToken,
+    });
   }
 
   //* chat screen*//

@@ -163,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   SizedBox(height: 25),
                   FutureBuilder<List<String>>(
-                    future: APIs.getAllUserImages(APIs.me.id),
+                    future: APIs.getAllUserImages(widget.user.id),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator();
