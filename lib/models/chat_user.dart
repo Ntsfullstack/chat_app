@@ -1,4 +1,15 @@
 class ChatUser {
+  late String image;
+  late String about;
+  late String name;
+  late String createdAt;
+  late bool isOnline;
+  late String id;
+  late String lastActive;
+  late String email;
+  late String pushToken;
+
+  // Constructor with named parameters
   ChatUser({
     required this.image,
     required this.about,
@@ -10,16 +21,8 @@ class ChatUser {
     required this.email,
     required this.pushToken,
   });
-  late String image;
-  late String about;
-  late String name;
-  late String createdAt;
-  late bool isOnline;
-  late String id;
-  late String lastActive;
-  late String email;
-  late String pushToken;
 
+  // Constructor for creating a ChatUser from JSON
   ChatUser.fromJson(Map<String, dynamic> json) {
     image = json['image'] ?? '';
     about = json['about'] ?? '';
@@ -32,6 +35,20 @@ class ChatUser {
     pushToken = json['push_token'] ?? '';
   }
 
+  // Named constructor for creating a ChatUser from the current user
+  ChatUser.fromCurrentUser({
+    required this.image,
+    required this.about,
+    required this.name,
+    required this.createdAt,
+    required this.isOnline,
+    required this.id,
+    required this.lastActive,
+    required this.email,
+    required this.pushToken,
+  });
+
+  // Map the current user to JSON
   Map<String, dynamic> toJson() {
     final data = <String, dynamic>{};
     data['image'] = image;

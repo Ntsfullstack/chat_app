@@ -48,7 +48,6 @@ class _ChatUserCardState extends State<ChatUserCard> {
               contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 1),
               leading: Stack(
                 children: [
-                  // User profile picture
                   InkWell(
                     onTap: () {
                       showDialog(
@@ -68,21 +67,18 @@ class _ChatUserCardState extends State<ChatUserCard> {
                       ),
                     ),
                   ),
-                  // Positioned widget for the online indicator\
-                  /*
-                   Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        width: 15,
-                        height: 15,
-                        decoration: BoxDecoration(
-                          color: Colors.greenAccent.shade400,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      )
-                      // Hide the online indicator when the user is not online
-                      ), */
+                  /* Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      width: 15,
+                      height: 15,
+                      decoration: BoxDecoration(
+                        color: Colors.greenAccent.shade400,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),*/
                 ],
               ),
               title: Text(widget.user.name),
@@ -96,18 +92,38 @@ class _ChatUserCardState extends State<ChatUserCard> {
               ),
               trailing: _message == null
                   ? null
-                  : _message!.read.isEmpty && _message!.fromId != APIs.user.uid
-                      ? Container(
-                          width: 15,
-                          height: 15,
-                        )
-                      : Text(
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
                           MyDateUtil.getLastMessageTime(
                             context: context,
                             time: _message!.sent,
                           ),
                           style: const TextStyle(color: Colors.black54),
                         ),
+                        SizedBox(width: 8), // Adjust the spacing as needed
+                        Container(
+                          width: 25,
+                          height: 25,
+                          decoration: BoxDecoration(
+                            color: Color(0x9999CCFF),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '5',
+                              // Số lượng tin nhắn chưa đọc, bạn có thể thay đổi giá trị này tùy thuộc vào logic của bạn.
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
             );
           },
         ),

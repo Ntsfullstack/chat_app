@@ -61,8 +61,39 @@ class APIs {
     }
   }
 
+//check if user exist or not
   static Future<bool> userExists() async {
     return (await firestore.collection('users').doc(user.uid).get()).exists;
+  }
+
+  //add chat user
+  // for adding an chat user for our conversation
+  static Future<bool> addChatUser(String email) async {
+    final data = await firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+    print('data: ${data.docs}');
+
+    if (data.docs.isNotEmpty && data.docs.first.id != user.uid) {
+      //user exists
+
+      print('user exists: ${data.docs.first.data()}');
+
+      firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('my_users')
+          .doc(data.docs.first.id)
+          .set({});
+
+      return true;
+    } else {
+      //user doesn't exists
+
+      return false;
+    }
   }
 
   static Future<void> getSelfInfo() async {
@@ -101,6 +132,10 @@ class APIs {
         .collection('users')
         .where('id', isNotEqualTo: user.uid)
         .snapshots();
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUsers() {
+    return APIs.firestore.collection('users').snapshots();
   }
 
   static Future<void> updateUserInfor() async {
@@ -151,8 +186,7 @@ class APIs {
       : '${id}_${user.uid}';
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
-    ChatUser user,
-  ) {
+      ChatUser user) {
     return APIs.firestore
         .collection('chats/${getConversationID(user.id)}/messages')
         .orderBy('sent',
@@ -174,13 +208,14 @@ class APIs {
         sent: time);
     final ref = firestore
         .collection('chats/${getConversationID(ChatUser.id)}/messages');
-    await ref.doc().set(message.toJson());
+    await ref.doc(time).set(message.toJson());
   }
 
-  static Future<void> updateMessageReadStatus(Message message) async {
+// update read status
+  static Future<void> updateMessageReadStatus(Message messages) async {
     firestore
-        .collection('chat/${getConversationID(message.fromId)}/messages/')
-        .doc(message.sent)
+        .collection('chat/${getConversationID(messages.fromId)}/messages/')
+        .doc(messages.sent)
         .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
   }
 

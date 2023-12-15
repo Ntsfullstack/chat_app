@@ -35,10 +35,9 @@ class _MoreLightState extends State<MoreLight> {
         Text(
           title,
           style: const TextStyle(
-            color: Color(0xFF0F1828),
-            fontSize: 14,
+            fontSize: 17,
             fontFamily: 'Mulish',
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
             height: 0.12,
           ),
         ),
@@ -69,7 +68,6 @@ class _MoreLightState extends State<MoreLight> {
               },
               child: Container(
                 padding: const EdgeInsets.all(16),
-                color: Colors.white,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -114,7 +112,6 @@ class _MoreLightState extends State<MoreLight> {
                             Text(
                               user.name ?? 'Tên người dùng',
                               style: const TextStyle(
-                                color: Color(0xFF0F1828),
                                 fontSize: 20,
                                 fontFamily: 'Mulish',
                                 fontWeight: FontWeight.w600,
@@ -158,7 +155,6 @@ class _MoreLightState extends State<MoreLight> {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(16),
-                color: Colors.white,
                 child: Column(
                   children: [
                     const SizedBox(height: 20),

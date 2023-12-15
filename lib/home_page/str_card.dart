@@ -1,84 +1,48 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_app/APIs/apis.dart';
-import 'package:chat_app/Homescreen.dart';
-import 'package:chat_app/chat_screen.dart';
-import 'package:chat_app/helper/my_date_util.dart';
-import 'package:chat_app/models/chat_user.dart';
-import 'package:chat_app/models/message.dart';
-import '../main.dart';
 
-class up_str extends StatefulWidget {
+import 'package:chat_app/models/chat_user.dart';
+
+class StoryCard extends StatefulWidget {
   final ChatUser user;
 
-  const up_str({Key? key, required this.user}) : super(key: key);
+  const StoryCard({Key? key, required this.user}) : super(key: key);
 
   @override
-  State<up_str> createState() => _ChatUserCardState();
+  State<StoryCard> createState() => _ChatUserCardState();
 }
 
-class _ChatUserCardState extends State<up_str> {
-  Message? _message;
-
+class _ChatUserCardState extends State<StoryCard> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ChatScreen(user: widget.user),
-            ),
-          );
-        },
-        child: StreamBuilder(
-          stream: APIs.getLastMessage(widget.user),
-          builder: (context, snapshot) {
-            final data = snapshot.data?.docs;
-            final list =
-                data?.map((e) => Message.fromJson(e.data())).toList() ?? [];
-            if (list.isNotEmpty) _message = list[0];
-
-            return ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 1),
-              leading: Stack(
-                children: [
-                  // User profile picture
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      width: 50,
-                      height: 50,
-                      imageUrl: widget.user.image,
-                      errorWidget: (context, url, error) => const CircleAvatar(
-                        child: Icon(CupertinoIcons.person),
-                      ),
-                    ),
-                  ),
-                  // Positioned widget for the online indicator
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 15,
-                      height: 15,
-                      decoration: BoxDecoration(
-                        color: Colors.greenAccent.shade400,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ],
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          // User profile picture
+          ClipRRect(
+            borderRadius: BorderRadius.circular(25),
+            child: CachedNetworkImage(
+              width: 50,
+              height: 50,
+              imageUrl: widget.user.image,
+              errorWidget: (context, url, error) => const CircleAvatar(
+                child: Icon(CupertinoIcons.person),
               ),
-              title: Text(widget.user.name),
-            );
-          },
-        ),
+            ),
+          ),
+          // Adjust the spacing between online indicator and text
+          // User name
+          SizedBox(height: 5),
+          Text(
+            widget.user.name,
+            style: TextStyle(
+              fontSize: 12, // Adjust the font size as needed
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:chat_app/helper/themes.dart';
 import 'package:chat_app/start_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,6 +23,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       home: const StartScreen(),
+      debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.system,
+      theme: ThemeClass.lightTheme,
+      // applies this theme if the device theme is light mode
+      darkTheme: ThemeClass.darkTheme,
     );
   }
 }

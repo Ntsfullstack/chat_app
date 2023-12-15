@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:chat_app/APIs/apis.dart';
 import 'package:chat_app/bottom_bar_screen/bottom_bar_screen.dart';
 import 'package:chat_app/home_page/chat_user_card.dart';
+import 'package:chat_app/home_page/str_card.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/more_widget/more_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -51,15 +50,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        bottomOpacity: 0,
+        elevation: 1,
         title: const Padding(
           padding: EdgeInsets.only(left: 1),
           child: Text(
             'Chats',
             style: TextStyle(
-              color: Colors.black,
               fontSize: 25,
               fontFamily: 'Mulish',
               height: 1,
@@ -74,9 +70,120 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Card(
+            elevation: 0.5,
+            child: SizedBox(
+              height: 89, // Adjust the height based on your design
+              child: Center(
+                child: Row(
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            // Handle the onPressed event here
+                            print('Button pressed!');
+                          },
+                          child: Container(
+                            width: 48,
+                            height: 48,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: ShapeDecoration(
+                              color: Color(0xFFDADAE5),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  left: 12,
+                                  top: 12,
+                                  child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    clipBehavior: Clip.antiAlias,
+                                    decoration: BoxDecoration(),
+                                    child: Stack(
+                                      children: [
+                                        // Add your existing stack content here
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Center(
+                                  child: Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Your Story',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Expanded(
+                      child: StreamBuilder(
+                        stream: APIs.getAllUsers(),
+                        builder: (context, snapshot) {
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.waiting:
+                            case ConnectionState.none:
+                            case ConnectionState.active:
+                            case ConnectionState.done:
+                              final data = snapshot.data?.docs;
+                              _list = data
+                                      ?.map((e) => ChatUser.fromJson(e.data()))
+                                      .toList() ??
+                                  [];
+                              if (_list.isNotEmpty) {
+                                return ListView.builder(
+                                  itemCount: _isSearching
+                                      ? _searchList.length
+                                      : _list.length,
+                                  physics: const BouncingScrollPhysics(),
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    return StoryCard(
+                                      user: _isSearching
+                                          ? _searchList[index]
+                                          : _list[index],
+                                    );
+                                  },
+                                );
+                              } else {
+                                return const Center(
+                                  child: Text(
+                                    'No connection found!',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                );
+                              }
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Container(
-            height: 60,
+            margin: EdgeInsets.symmetric(vertical: 1),
+            height: 50,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             child: CupertinoTextField(
               onTap: () {},
@@ -100,13 +207,12 @@ class _HomePageState extends State<HomePage> {
               },
               prefix: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 5),
-                child: Icon(Icons.search, color: Colors.black),
+                child: Icon(
+                  Icons.search,
+                ),
               ),
-              placeholderStyle:
-                  const TextStyle(color: Color.fromARGB(66, 0, 0, 0)),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: const Color(0xFFC1C4D3),
                   width: 1,
                 ),
                 borderRadius: BorderRadius.circular(10.0),

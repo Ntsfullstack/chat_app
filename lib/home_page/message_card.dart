@@ -28,7 +28,7 @@ class _MessageCardState extends State<MessageCard> {
   }
 
   Widget _blueMessage() {
-    if (widget.message.read.isNotEmpty) {
+    if (widget.message.read.isEmpty) {
       APIs.updateMessageReadStatus(widget.message);
       print('message read updated');
     }
@@ -159,15 +159,25 @@ class _MessageCardState extends State<MessageCard> {
                     const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.only(right: 2),
-                      child: Text(
-                        MyDateUtil.getFormattedTime(
-                          context: context,
-                          time: widget.message.sent,
-                        ),
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.white,
-                        ),
+                      child: Column(
+                        children: [
+                          Text(
+                            MyDateUtil.getFormattedTime(
+                              context: context,
+                              time: widget.message.sent,
+                            ),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
+                          ),
+                          if (widget.message.read.isNotEmpty)
+                            Text(
+                              'Read',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 12),
+                            )
+                        ],
                       ),
                     ),
                   ],

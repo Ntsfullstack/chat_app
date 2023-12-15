@@ -1,6 +1,7 @@
 import 'package:chat_app/APIs/apis.dart';
 import 'package:chat_app/bottom_bar_screen/bottom_bar_screen.dart';
 import 'package:chat_app/contact_screen/contact_user_card.dart';
+import 'package:chat_app/helper/dialog.dart';
 import 'package:chat_app/home_page/chat_user_card.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/more_widget/more_screen.dart';
@@ -31,7 +32,6 @@ class _CntactsPageState extends State<CntactsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         bottomOpacity: 0,
         title: const Padding(
@@ -39,7 +39,6 @@ class _CntactsPageState extends State<CntactsPage> {
           child: Text(
             'Contacts',
             style: TextStyle(
-              color: Colors.black,
               fontSize: 25,
               fontFamily: 'Mulish',
               height: 1,
@@ -47,9 +46,14 @@ class _CntactsPageState extends State<CntactsPage> {
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 24),
-            child: SvgPicture.asset('assets/vectors/ic_add.svg'),
+          GestureDetector(
+            onTap: () {
+              _addChatuserDialog();
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 24),
+              child: SvgPicture.asset('assets/vectors/ic_add.svg'),
+            ),
           )
         ],
       ),
@@ -135,5 +139,75 @@ class _CntactsPageState extends State<CntactsPage> {
         ],
       ),
     );
+  }
+
+//for add new chat user
+  void _addChatuserDialog() {
+    String email = '';
+
+    showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+              contentPadding: const EdgeInsets.only(
+                  left: 24, right: 24, top: 20, bottom: 10),
+
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+
+              //title
+              title: Row(
+                children: const [
+                  Icon(
+                    Icons.person_add,
+                    size: 30,
+                  ),
+                  Text(' Add User')
+                ],
+              ),
+
+              //content
+              content: TextFormField(
+                maxLines: null,
+                onChanged: (value) => email = value,
+                decoration: InputDecoration(
+                    hintText: 'Email',
+                    prefixIcon: Icon(Icons.email, color: Colors.blue),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15))),
+              ),
+
+              //actions
+              actions: [
+                //cancel button
+                MaterialButton(
+                    onPressed: () {
+                      //hide alert dialog
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.blue, fontSize: 16),
+                    )),
+
+                //update button
+                MaterialButton(
+                    onPressed: () async {
+                      //hide alert dialog
+                      Navigator.pop(context);
+                      if (email.isNotEmpty) {
+                        await APIs.addChatUser(email).then((value) {
+                          if (!value) {
+                            Dialogs.showSnackbar(
+                                context, 'User does not Exists!');
+                          }
+                        });
+                      }
+                    },
+                    child: const Text(
+                      'Add',
+                      style: TextStyle(color: Colors.blue, fontSize: 16),
+                    ))
+              ],
+            ));
   }
 }
