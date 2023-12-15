@@ -17,10 +17,9 @@ class APIs {
 
   static User get user => auth.currentUser!;
 
-// for access firebase messaging(push notification)
   static FirebaseMessaging fMessaging = FirebaseMessaging.instance;
 
-  //getting firebase messaging token
+  // for getting firebase messaging token
   static Future<void> getFirebaseMessagingToken() async {
     await fMessaging.requestPermission();
 
@@ -30,8 +29,19 @@ class APIs {
         print('Push Token: $t');
       }
     });
+
+    // for handling foreground messages
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   log('Got a message whilst in the foreground!');
+    //   log('Message data: ${message.data}');
+
+    //   if (message.notification != null) {
+    //     log('Message also contained a notification: ${message.notification}');
+    //   }
+    // });
   }
 
+  // for sending push notification
   static Future<void> sendPushNotification(
       ChatUser chatUser, String msg) async {
     try {
@@ -51,7 +61,7 @@ class APIs {
           headers: {
             HttpHeaders.contentTypeHeader: 'application/json',
             HttpHeaders.authorizationHeader:
-                'key=AAAAdlX6vHg:APA91bEMys-kPOO2PERDughh438XYbfWyGFAVV8Liq412Bbi9Tk_sVaC_JGVrz2iifgrru3TEmUh2ZAA6RV4hS3q_Y1PDhMj4Vq5Hny0fIibboToix1VAfYuZad-NQ0iBfR-aSgY4rD2'
+                'key=AAAAdlX6vHg:APA91bHjG826vkW9RqX6o3nbZSRHBsdLGXcEUpZ8Ji2tS3gBAHP2GzBx8CKYv8NeDwiwvSDeYH2oQYqAix-tBoCjz3qsLI0Od9FZ2qz-A2yWtgD9-rbR7abHu5Ri52CXgP21FYpteZ5A'
           },
           body: jsonEncode(body));
       print('Response status: ${res.statusCode}');
@@ -100,6 +110,7 @@ class APIs {
     await firestore.collection('users').doc(user.uid).get().then((user) async {
       if (user.exists) {
         me = ChatUser.fromJson(user.data()!);
+        getFirebaseMessagingToken();
         await getFirebaseMessagingToken();
         APIs.updateActiveStatus(true);
       } else {
@@ -196,19 +207,20 @@ class APIs {
 
 //for sending message
   static Future<void> sendMessage(
-      ChatUser ChatUser, String msg, Type type) async {
+      ChatUser chatUser, String msg, Type type) async {
     final time = DateTime.now().millisecondsSinceEpoch.toString();
 
     final Message message = Message(
-        toId: ChatUser.id,
+        toId: chatUser.id,
         msg: msg,
         read: '',
         type: type,
         fromId: user.uid,
         sent: time);
     final ref = firestore
-        .collection('chats/${getConversationID(ChatUser.id)}/messages');
-    await ref.doc(time).set(message.toJson());
+        .collection('chats/${getConversationID(chatUser.id)}/messages');
+    await ref.doc(time).set(message.toJson()).then((value) =>
+        sendPushNotification(chatUser, type == Type.text ? msg : 'image'));
   }
 
 // update read status

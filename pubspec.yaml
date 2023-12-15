@@ -63,6 +63,11 @@ dependencies:
   font_awesome_flutter: ^10.6.0
   flutter_launcher_icons: ^0.13.1
   hexcolor: ^3.0.1
+  flutter_notification_channel: ^2.0.0
+  flutter_overlay_window: ^0.4.3
+  provider: ^6.1.1
+  overlay_support: ^2.1.0
+
 
 dev_dependencies:
   flutter_test:

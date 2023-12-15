@@ -40,7 +40,6 @@ class _ChatScreenState extends State<ChatScreen> {
           },
           child: Scaffold(
             appBar: AppBar(
-              backgroundColor: Colors.white,
               elevation: 0.5,
               automaticallyImplyLeading: false,
               flexibleSpace: _appBar(),
@@ -49,12 +48,14 @@ class _ChatScreenState extends State<ChatScreen> {
                   onPressed: () {
                     // Handle search action
                   },
-                  icon: const Icon(Icons.search, color: Colors.black),
+                  icon: const Icon(
+                    Icons.search,
+                  ),
                 ),
                 PopupMenuButton(
                   icon: const Icon(
-                    Icons.more_vert, // Replace with the icon you want to use
-                    color: Colors.black, // Set the color to black
+                    Icons
+                        .more_vert, // Replace with the icon you want to use// Set the color to black
                   ),
                   itemBuilder: (context) {
                     return [
@@ -133,7 +134,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   )
               ],
             ),
-            backgroundColor: Color(0xFFF7F7FC),
           ),
         ),
       ),
@@ -153,15 +153,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                    icon: const Icon(
+                      Icons.arrow_back,
+                    ),
                   ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(22),
                     child: CachedNetworkImage(
                       width: 45,
                       height: 45,
-                      imageUrl:
-                          list.isNotEmpty ? list[0].image : widget.user.image,
+                      imageUrl: widget.user.image,
                       //placeholder: (context, url) => CircularProgressIndicator(),
                       errorWidget: (context, url, error) => const CircleAvatar(
                           child: Icon(CupertinoIcons.person)),
@@ -175,9 +176,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       Text(
                         list.isNotEmpty ? list[0].name : widget.user.name,
                         style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.black87,
-                            fontWeight: FontWeight.w500),
+                            fontSize: 18, fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -189,9 +188,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             : MyDateUtil.getLastMessageTime(
                                 context: context, time: widget.user.lastActive),
                         style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400),
+                            fontSize: 13, fontWeight: FontWeight.w400),
                       )
                     ],
                   ),
@@ -216,8 +213,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         FocusScope.of(context).unfocus();
                         setState(() => _showEmoji = !_showEmoji);
                       },
-                      icon: const Icon(Icons.emoji_emotions,
-                          color: Colors.black54)),
+                      icon: const Icon(
+                        Icons.emoji_emotions,
+                      )),
                   Expanded(
                       child: TextField(
                     controller: _textController,
@@ -228,7 +226,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                     decoration: const InputDecoration(
                       hintText: 'Type Something',
-                      hintStyle: TextStyle(color: Colors.black, fontSize: 12),
+                      hintStyle: TextStyle(fontSize: 12),
                       border: InputBorder.none,
                     ),
                   )),
@@ -248,7 +246,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         setState(() => _isUploading = false);
                       }
                     },
-                    icon: const Icon(Icons.image, color: Colors.black54),
+                    icon: const Icon(Icons.image),
                   ),
                   //take img from camera
                   IconButton(
@@ -261,8 +259,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         await APIs.sendChatImage(widget.user, File(image.path));
                       }
                     },
-                    icon: const Icon(Icons.camera_alt_rounded,
-                        color: Colors.black54),
+                    icon: const Icon(
+                      Icons.camera_alt_rounded,
+                    ),
                   ),
                   const SizedBox(width: 5)
                 ],
@@ -282,7 +281,7 @@ class _ChatScreenState extends State<ChatScreen> {
               padding: const EdgeInsets.only(
                   top: 10, bottom: 10, right: 5, left: 10),
               shape: const CircleBorder(),
-              color: Colors.green,
+              color: Colors.blue,
               child: const Icon(
                 Icons.send,
                 color: Colors.white,
