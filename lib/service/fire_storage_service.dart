@@ -4,7 +4,7 @@ import 'package:chat_app/models/phone_number.dart';
 
 class FireStorageService {
   final CollectionReference _phonesCollectionReference =
-  FirebaseFirestore.instance.collection('phoneNumber');
+      FirebaseFirestore.instance.collection('phoneNumber');
 
   Future createPhoneNumber(PhoneNumber phoneNumber) async {
     try {
