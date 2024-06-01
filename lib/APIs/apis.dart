@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/models/message.dart';
+import 'package:chat_app/models/story.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -31,19 +32,19 @@ class APIs {
     });
 
     // for handling foreground messages
-    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    //   log('Got a message whilst in the foreground!');
-    //   log('Message data: ${message.data}');
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
 
-    //   if (message.notification != null) {
-    //     log('Message also contained a notification: ${message.notification}');
-    //   }
-    // });
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
   }
 
   // for sending push notification
-  static Future<void> sendPushNotification(
-      ChatUser chatUser, String msg) async {
+  static Future<void> sendPushNotification(ChatUser chatUser,
+      String msg) async {
     try {
       final body = {
         "to": chatUser.pushToken,
@@ -52,16 +53,16 @@ class APIs {
           "body": msg,
           "android_channel_id": "chats"
         },
-        // "data": {
-        //   "some_data": "User ID: ${me.id}",
-        // },
+        "data": {
+          "some_data": "User ID: ${me.id}",
+        },
       };
 
       var res = await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
           headers: {
             HttpHeaders.contentTypeHeader: 'application/json',
             HttpHeaders.authorizationHeader:
-                'key=AAAAdlX6vHg:APA91bHjG826vkW9RqX6o3nbZSRHBsdLGXcEUpZ8Ji2tS3gBAHP2GzBx8CKYv8NeDwiwvSDeYH2oQYqAix-tBoCjz3qsLI0Od9FZ2qz-A2yWtgD9-rbR7abHu5Ri52CXgP21FYpteZ5A'
+            'key=AAAAdlX6vHg:APA91bHjG826vkW9RqX6o3nbZSRHBsdLGXcEUpZ8Ji2tS3gBAHP2GzBx8CKYv8NeDwiwvSDeYH2oQYqAix-tBoCjz3qsLI0Od9FZ2qz-A2yWtgD9-rbR7abHu5Ri52CXgP21FYpteZ5A'
           },
           body: jsonEncode(body));
       print('Response status: ${res.statusCode}');
@@ -120,18 +121,22 @@ class APIs {
   }
 
   //create a new user
+// create a new user
   static Future<void> createUser() async {
-    final time = DateTime.now().microsecondsSinceEpoch.toString();
+    final time = DateTime.now().toUtc(); // Use UTC time for consistency
     final chatUser = ChatUser(
-        id: user.uid,
-        name: user.displayName.toString(),
-        email: user.email.toString(),
-        about: "Hey, I'm using ",
-        image: user.photoURL.toString(),
-        createdAt: time,
-        isOnline: false,
-        lastActive: time,
-        pushToken: '');
+      id: user.uid,
+      name: user.displayName.toString(),
+      email: user.email.toString(),
+      about: "Hey, I'm using ",
+      image: user.photoURL.toString(),
+      createdAt: time.toString(),
+      isOnline: false,
+      lastActive: time.toString(),
+      pushToken: '',
+      // Set lastMessageTime to current time
+    );
+
     return await firestore
         .collection('users')
         .doc(user.uid)
@@ -158,11 +163,15 @@ class APIs {
 
 //update profile picture
   static Future<void> updateProfilePicture(File file) async {
-    final ext = file.path.split('.').last;
+    final ext = file.path
+        .split('.')
+        .last;
     print('Extension: $ext');
 
     // Use the user's UID and a timestamp as part of the storage path
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final timestamp = DateTime
+        .now()
+        .millisecondsSinceEpoch;
     final ref = storage
         .ref()
         .child('profile_pictures/${user.uid}/profile_picture_$timestamp.$ext');
@@ -209,18 +218,60 @@ class APIs {
     return userImages;
   }
 
-  static Future<void> UpStory(File file) async {
-    final ext = file.path.split('.').last;
-    print('Extension: $ext');
-    final ref = storage.ref().child('story/${user.uid}.$ext');
-    //uploading imagge
-    await ref
-        .putFile(file, SettableMetadata(contentType: 'image/$ext'))
-        .then((p0) {
-      print('Data transfered: ${p0.bytesTransferred / 1000} kb');
-    });
-    //updating image to fire storage database
-  }
+  // static Future<String?> UpStory(File file) async {
+  //   try {
+  //     final ext = file.path.split('.').last;
+  //     print('Extension: $ext');
+  //     final ref = storage.ref().child('story/${user.uid}.$ext');
+  //
+  //     // Upload image
+  //     final UploadTask uploadTask = ref.putFile(
+  //       file,
+  //       SettableMetadata(contentType: 'image/$ext'),
+  //     );
+  //
+  //     // Wait for the upload to complete
+  //     final TaskSnapshot taskSnapshot = await uploadTask;
+  //     final String downloadURL = await taskSnapshot.ref.getDownloadURL();
+  //
+  //     // After uploading, save story data to Firestore
+  //     await FirebaseFirestore.instance.collection('stories').doc(user.uid).set({
+  //       'url': downloadURL,
+  //       'uploadedAt': FieldValue.serverTimestamp(),
+  //     });
+  //
+  //     return downloadURL; // Return the uploaded image URL
+  //   } catch (e) {
+  //     print('Error uploading story: $e');
+  //     return null; // Return null in case of an error
+  //   }
+  // }
+  //
+  // static Future<List<String>> getUserStories() async {
+  //   final user = auth.currentUser;
+  //   if (user == null) {
+  //     print('User not authenticated');
+  //     return [];
+  //   }
+  //
+  //   final userStoryFolder = 'story/${user.uid}';
+  //   final ref = storage.ref().child(userStoryFolder);
+  //
+  //   try {
+  //     final ListResult result = await ref.listAll();
+  //     final List<String> storyUrls = [];
+  //
+  //     for (final item in result.items) {
+  //       final url = await item.getDownloadURL();
+  //       storyUrls.add(url);
+  //     }
+  //
+  //     return storyUrls;
+  //   } catch (e) {
+  //     print('Error getting user stories: $e');
+  //     return [];
+  //   }
+  // }
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
       ChatUser chatUser) {
@@ -233,29 +284,36 @@ class APIs {
   static Future<void> updateActiveStatus(bool isOnline) async {
     firestore.collection('users').doc(user.uid).update({
       'is_online': isOnline,
-      'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
+      'last_active': DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString(),
       'push_token': me.pushToken,
     });
   }
 
   //* chat screen*//
-  static String getConversationID(String id) => user.uid.hashCode <= id.hashCode
-      ? '${user.uid}_$id'
-      : '${id}_${user.uid}';
+  static String getConversationID(String id) =>
+      user.uid.hashCode <= id.hashCode
+          ? '${user.uid}_$id'
+          : '${id}_${user.uid}';
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
       ChatUser user) {
     return APIs.firestore
         .collection('chats/${getConversationID(user.id)}/messages')
         .orderBy('sent',
-            descending: true) // Sắp xếp theo thời gian gửi giảm dần
+        descending: true) // Sắp xếp theo thời gian gửi giảm dần
         .snapshots();
   }
 
 //for sending message
-  static Future<void> sendMessage(
-      ChatUser chatUser, String msg, Type type) async {
-    final time = DateTime.now().millisecondsSinceEpoch.toString();
+  static Future<void> sendMessage(ChatUser chatUser, String msg,
+      Type type) async {
+    final time = DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString();
 
     final Message message = Message(
         toId: chatUser.id,
@@ -275,7 +333,10 @@ class APIs {
     firestore
         .collection('chat/${getConversationID(messages.fromId)}/messages/')
         .doc(messages.sent)
-        .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
+        .update({'read': DateTime
+        .now()
+        .millisecondsSinceEpoch
+        .toString()});
   }
 
   static Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessage(
@@ -290,11 +351,15 @@ class APIs {
 //send chat image
   static Future<void> sendChatImage(ChatUser chatUser, File file) async {
     //getting image file extension
-    final ext = file.path.split('.').last;
+    final ext = file.path
+        .split('.')
+        .last;
 
     //storage file ref with path
     final ref = storage.ref().child(
-        'images/${getConversationID(chatUser.id)}/${DateTime.now().millisecondsSinceEpoch}.$ext');
+        'images/${getConversationID(chatUser.id)}/${DateTime
+            .now()
+            .millisecondsSinceEpoch}.$ext');
 
     //uploading image
     await ref

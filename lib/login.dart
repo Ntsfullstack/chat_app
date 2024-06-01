@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({Key? key}) : super(key: key);
 
@@ -56,23 +57,24 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                     backgroundColor: const Color(0xFFD3D3EA),
                     child: _selectedImagePath != null
                         ? ClipOval(
-                      child: Image.file(
-                        File(_selectedImagePath!),
-                        fit: BoxFit.cover,
-                        width: 96,
-                        height: 96,
-                      ),
-                    )
+                            child: Image.file(
+                              File(_selectedImagePath!),
+                              fit: BoxFit.cover,
+                              width: 96,
+                              height: 96,
+                            ),
+                          )
                         : const Icon(
-                      Icons.person,
-                      size: 48,
-                      color: Color(0xAFA7A7FF),
-                    ),
+                            Icons.person,
+                            size: 48,
+                            color: Color(0xAFA7A7FF),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 40),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                   decoration: ShapeDecoration(
                     color: const Color(0xFFF7F7FC),
                     shape: RoundedRectangleBorder(
@@ -101,7 +103,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 ),
                 const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                   decoration: ShapeDecoration(
                     color: const Color(0xFFC6C6E3),
                     shape: RoundedRectangleBorder(
@@ -132,13 +135,15 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 const SizedBox(height: 30),
                 GestureDetector(
                   onTap: () {
-                    _saveUserInfo(_firstNameController.text, _lastNameController.text, _selectedImagePath ?? '');
+                    _saveUserInfo(_firstNameController.text,
+                        _lastNameController.text, _selectedImagePath ?? '');
                     Navigator.pop(context);
                   },
                   child: Container(
                     width: 327,
                     height: 55,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 11),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 11),
                     clipBehavior: Clip.antiAlias,
                     decoration: ShapeDecoration(
                       color: const Color(0xFF002DE3),
@@ -184,7 +189,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     }
   }
 
-  Future<void> _saveUserInfo(String firstName, String lastName, String imagePath) async {
+  Future<void> _saveUserInfo(
+      String firstName, String lastName, String imagePath) async {
     try {
       await FirebaseFirestore.instance.collection('users').add({
         'firstName': firstName,

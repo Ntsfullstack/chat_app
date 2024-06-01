@@ -68,10 +68,11 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 24),
-            child: SvgPicture.asset('assets/vectors/ic_new_message.svg'),
-          )
+          IconButton(
+              onPressed: () {
+                print('test');
+              },
+              icon: Icon(Icons.notifications))
         ],
       ),
       body: Column(
@@ -88,20 +89,20 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: () async {
-                            final ImagePicker picker = ImagePicker();
-                            final XFile? image = await picker.pickImage(
-                                source: ImageSource.gallery, imageQuality: 80);
-                            if (image != null) {
-                              print(
-                                  'image path : ${image.path} -- MimeType: ${image.mimeType}');
-                              setState(() {
-                                _image = image.path;
-                              });
-                              APIs.UpStory(File(_image!));
-                            }
-                            Navigator.pop(context);
-                          },
+                          // onTap: () async {
+                          //   final ImagePicker picker = ImagePicker();
+                          //   final XFile? image = await picker.pickImage(
+                          //       source: ImageSource.gallery, imageQuality: 80);
+                          //   if (image != null) {
+                          //     print(
+                          //         'image path : ${image.path} -- MimeType: ${image.mimeType}');
+                          //     setState(() {
+                          //       _image = image.path;
+                          //     });
+                          //     APIs.UpStory(File(_image!));
+                          //   }
+                          //   Navigator.pop(context);
+                          // },
                           child: Container(
                             width: 48,
                             height: 48,

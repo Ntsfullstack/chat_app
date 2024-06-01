@@ -24,16 +24,27 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
 
   void _onItemTapped(int index) {
     setState(() {
+      _selectedIndex = index;
       controller.jumpToPage(index);
+    });
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
       _selectedIndex = index;
     });
   }
 
-  //Get user data and current user if user has logged in
   @override
   void initState() {
     controller = PageController();
     super.initState();
+    controller.addListener(() {
+      int newIndex = controller.page!.round();
+      if (_selectedIndex != newIndex) {
+        _onPageChanged(newIndex);
+      }
+    });
     APIs.getSelfInfo();
   }
 
@@ -43,6 +54,7 @@ class _BottomBarScreenState extends State<BottomBarScreen> {
       body: PageView(
         controller: controller,
         children: pages,
+        onPageChanged: _onPageChanged,
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
