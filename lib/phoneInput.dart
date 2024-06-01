@@ -51,7 +51,7 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
               const SizedBox(height: 98),
               const Center(
                 child: Text(
-                  "Enter Your Phone Number",
+                  "Login with Google Account",
                   style: TextStyle(
                     color: Color(0xFF0F1828),
                     fontSize: 22,
@@ -62,81 +62,96 @@ class _InputPhoneNumberState extends State<InputPhoneNumber> {
               const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 1),
-                  child: Text(
-                    "Please confirm your country code and enter your phone number",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFF0F1828),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                      height: 2,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 48),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                ),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF7F7FC),
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(
-                            color: Colors.grey.withOpacity(0.5),
-                          ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        child: TextFormField(
-                          controller: phoneNumberController,
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(
-                            hintText: "Phone Number",
-                            hintStyle: TextStyle(
-                              color: Color(0xFFADB5BD),
-                              fontSize: 14,
-                            ),
-                            border: InputBorder.none,
-                          ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Please select login with Google to continue",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF0F1828),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          height: 2,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 48),
-              InkWell(
-                onTap: _verifyPhone,
-                child: Container(
-                  margin: const EdgeInsets.only(
-                    left: 24,
-                    right: 24,
-                  ),
-                  height: 52,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: const Color(0xFF002ED3),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "Continue",
-                      style: TextStyle(
-                        color: Colors.white,
+                      SizedBox(height: 20),
+                      Text(
+                        "If you login to use this app, you must agree to all of our terms and conditions",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF0F1828),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          height: 2,
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 50), // Added spacing between buttons
+              // const SizedBox(height: 48),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(
+              //     horizontal: 24,
+              //   ),
+              //   child: Row(
+              //     children: <Widget>[
+              //       Expanded(
+              //         child: Container(
+              //           height: 40,
+              //           decoration: BoxDecoration(
+              //             color: const Color(0xFFF7F7FC),
+              //             borderRadius: BorderRadius.circular(4),
+              //             border: Border.all(
+              //               color: Colors.grey.withOpacity(0.5),
+              //             ),
+              //           ),
+              //           padding: const EdgeInsets.symmetric(
+              //             horizontal: 8,
+              //             vertical: 4,
+              //           ),
+              //           child: TextFormField(
+              //             controller: phoneNumberController,
+              //             keyboardType: TextInputType.text,
+              //             decoration: const InputDecoration(
+              //               hintText: "Phone Number",
+              //               hintStyle: TextStyle(
+              //                 color: Color(0xFFADB5BD),
+              //                 fontSize: 14,
+              //               ),
+              //               border: InputBorder.none,
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
+              // const SizedBox(height: 48),
+              // InkWell(
+              //   onTap: _verifyPhone,
+              //   child: Container(
+              //     margin: const EdgeInsets.only(
+              //       left: 24,
+              //       right: 24,
+              //     ),
+              //     height: 52,
+              //     width: double.infinity,
+              //     decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(30),
+              //       color: const Color(0xFF002ED3),
+              //     ),
+              //     child: const Center(
+              //       child: Text(
+              //         "Continue",
+              //         style: TextStyle(
+              //           color: Colors.white,
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              const SizedBox(height: 30), // Added spacing between buttons
               InkWell(
                 onTap: () {
                   _handleGoogleBtnClick();
